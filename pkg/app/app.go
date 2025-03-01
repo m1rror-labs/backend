@@ -27,9 +27,14 @@ type App struct {
 	env    string
 	engine *gin.Engine
 	auth   pkg.Auth
+	repo   pkg.Repository
 }
 
-func NewApp(env string, auth pkg.Auth) *App {
+func NewApp(
+	env string,
+	auth pkg.Auth,
+	repo pkg.Repository,
+) *App {
 	engine := gin.New()
 	engine.Use(
 		gin.Recovery(),
@@ -50,6 +55,7 @@ func NewApp(env string, auth pkg.Auth) *App {
 		env:    env,
 		engine: engine,
 		auth:   auth,
+		repo:   repo,
 	}
 }
 
