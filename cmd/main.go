@@ -4,6 +4,7 @@ import (
 	"mirror-backend/pkg/app"
 	"mirror-backend/pkg/dependencies/jwt"
 	"mirror-backend/pkg/dependencies/postgres"
+	"mirror-backend/pkg/dependencies/rpcengine"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -18,9 +19,11 @@ func main() {
 	dbUrl := os.Getenv("DATABASE_URL")
 	repo := postgres.NewRepository(dbUrl)
 
+	rpcEngine := rpcengine.New()
+
 	env := os.Getenv("ENV")
 
-	app := app.NewApp(env, auth, repo)
+	app := app.NewApp(env, auth, repo, rpcEngine)
 
 	app.Run()
 }

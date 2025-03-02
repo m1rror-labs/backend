@@ -22,6 +22,7 @@ func TestReadUser(t *testing.T) {
 		Email("hunterwilliamsimmons@gmail.com").
 		TeamID(uuid.MustParse("15b1eed5-6148-40ce-97dd-c0aaaa43bef0")).
 		WithApiKeys().
+		WithBlockchains().
 		Execute(context.Background())
 	if err != nil {
 		t.Fatal(err)

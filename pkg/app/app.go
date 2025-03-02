@@ -24,16 +24,18 @@ var _ = websocket.Upgrader{
 }
 
 type App struct {
-	env    string
-	engine *gin.Engine
-	auth   pkg.Auth
-	repo   pkg.Repository
+	env       string
+	engine    *gin.Engine
+	auth      pkg.Auth
+	repo      pkg.Repository
+	rpcEngine pkg.RpcEngine
 }
 
 func NewApp(
 	env string,
 	auth pkg.Auth,
 	repo pkg.Repository,
+	rpcEngine pkg.RpcEngine,
 ) *App {
 	engine := gin.New()
 	engine.Use(
@@ -52,15 +54,17 @@ func NewApp(
 	engine.Use(cors.New(config))
 
 	return &App{
-		env:    env,
-		engine: engine,
-		auth:   auth,
-		repo:   repo,
+		env:       env,
+		engine:    engine,
+		auth:      auth,
+		repo:      repo,
+		rpcEngine: rpcEngine,
 	}
 }
 
 func (a *App) Run() {
 	a.AttachStandardRoutes()
+	a.AttachBlockchainRoutes()
 	a.AttachUserRoutes()
 
 	// Server configurations for access across go routines

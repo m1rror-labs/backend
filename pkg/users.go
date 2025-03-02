@@ -20,11 +20,12 @@ type User struct {
 
 type Team struct {
 	bun.BaseModel `bun:"table:teams"`
-	ID            uuid.UUID `json:"id,omitempty" bun:"type:uuid,default:uuid_generate_v4(),pk"`
-	CreatedAt     time.Time `json:"created_at" bun:",nullzero,notnull,default:current_timestamp"`
-	Name          string    `json:"name" bun:",notnull"`
-	Users         []User    `json:"users,omitempty" bun:"rel:has-many,join:id=team_id"`
-	ApiKeys       []ApiKey  `json:"api_keys,omitempty" bun:"rel:has-many,join:id=team_id"`
+	ID            uuid.UUID    `json:"id,omitempty" bun:"type:uuid,default:uuid_generate_v4(),pk"`
+	CreatedAt     time.Time    `json:"created_at" bun:",nullzero,notnull,default:current_timestamp"`
+	Name          string       `json:"name" bun:",notnull"`
+	Users         []User       `json:"users,omitempty" bun:"rel:has-many,join:id=team_id"`
+	ApiKeys       []ApiKey     `json:"api_keys,omitempty" bun:"rel:has-many,join:id=team_id"`
+	Blockchains   []Blockchain `json:"blockchains,omitempty" bun:"rel:has-many,join:id=team_id"`
 }
 
 type ApiKey struct {
@@ -66,6 +67,7 @@ type UserReader interface {
 
 	WithTeam() UserReader
 	WithApiKeys() UserReader
+	WithBlockchains() UserReader
 }
 
 type TeamReader interface {
@@ -95,4 +97,6 @@ func (e Err) Error() string {
 const (
 	ErrUnauthorized   = Err("Unauthorized")
 	ErrTooManyApiKeys = Err("Too many api keys")
+	ErrHttpRequest    = Err("HTTP request error")
+	ErrNoApiKey       = Err("No api key")
 )

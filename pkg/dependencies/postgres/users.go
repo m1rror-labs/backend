@@ -54,7 +54,16 @@ func (r *userReader) WithTeam() pkg.UserReader {
 }
 
 func (r *userReader) WithApiKeys() pkg.UserReader {
-	r.selectQuery = r.selectQuery.Relation("Team.ApiKeys")
+	r.selectQuery = r.selectQuery.Relation("Team.ApiKeys", func(sq *bun.SelectQuery) *bun.SelectQuery {
+		return sq.OrderExpr("created_at DESC")
+	})
+	return r
+}
+
+func (r *userReader) WithBlockchains() pkg.UserReader {
+	r.selectQuery = r.selectQuery.Relation("Team.Blockchains", func(sq *bun.SelectQuery) *bun.SelectQuery {
+		return sq.OrderExpr("created_at DESC")
+	})
 	return r
 }
 
