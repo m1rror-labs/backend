@@ -85,3 +85,14 @@ type ApiKeyReader interface {
 	ID(id uuid.UUID) ApiKeyReader
 	TeamID(teamID uuid.UUID) ApiKeyReader
 }
+
+type Err string
+
+func (e Err) Error() string {
+	return string(e)
+}
+
+const (
+	ErrUnauthorized   = Err("Unauthorized")
+	ErrTooManyApiKeys = Err("Too many api keys")
+)

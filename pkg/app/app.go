@@ -61,6 +61,7 @@ func NewApp(
 
 func (a *App) Run() {
 	a.AttachStandardRoutes()
+	a.AttachUserRoutes()
 
 	// Server configurations for access across go routines
 	server := &http.Server{
