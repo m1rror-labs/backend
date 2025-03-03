@@ -24,6 +24,8 @@ type RpcEngine interface {
 
 type BlockchainRepo interface {
 	ReadBlockchain() BlockchainReader
+
+	UpdateBlockchain(id uuid.UUID) BlockchainUpdater
 }
 
 type BlockchainReader interface {
@@ -32,4 +34,10 @@ type BlockchainReader interface {
 
 	ID(id uuid.UUID) BlockchainReader
 	TeamID(teamID uuid.UUID) BlockchainReader
+}
+
+type BlockchainUpdater interface {
+	Execute(ctx context.Context) error
+
+	Label(label *string) BlockchainUpdater
 }

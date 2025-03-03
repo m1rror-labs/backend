@@ -20,6 +20,23 @@ func CreateBlockchain(ctx context.Context, rpcEngine pkg.RpcEngine, blockchainRe
 	return blockchainRepo.ReadBlockchain().ID(blockchainID).ExecuteOne(ctx)
 }
 
+func UpdateBlockchain(ctx context.Context, blockchainRepo pkg.BlockchainRepo, user pkg.User, newBlockchain pkg.Blockchain) error {
+	authorized := false
+	for _, key := range user.Team.Blockchains {
+		if key.ID == newBlockchain.ID { // Ensure the key ID is not changed
+			newBlockchain.TeamID = key.TeamID                 // Ensure the team ID is not changed
+			newBlockchain.CreatedAt = key.CreatedAt           // Ensure the created at time is not changed
+			newBlockchain.AirdropKeypair = key.AirdropKeypair // Ensure the airdrop keypair is not changed
+			authorized = true
+		}
+	}
+	if !authorized {
+		return pkg.ErrUnauthorized
+	}
+
+	return blockchainRepo.UpdateBlockchain(newBlockchain.ID).Label(newBlockchain.Label).Execute(ctx)
+}
+
 func DeleteBlockchain(ctx context.Context, rpcEngine pkg.RpcEngine, blockchainRepo pkg.BlockchainRepo, user pkg.User, blockchainID uuid.UUID) error {
 	if len(user.Team.ApiKeys) == 0 {
 		return pkg.ErrNoApiKey

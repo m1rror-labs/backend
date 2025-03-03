@@ -42,3 +42,21 @@ func (r *blockchainReader) TeamID(teamID uuid.UUID) pkg.BlockchainReader {
 	r.selectQuery = r.selectQuery.Where("team_id = ?", teamID)
 	return r
 }
+
+type blockchainUpdater struct {
+	updateQuery *bun.UpdateQuery
+}
+
+func (r *repository) UpdateBlockchain(id uuid.UUID) pkg.BlockchainUpdater {
+	return &blockchainUpdater{updateQuery: r.db.NewUpdate().Model(&pkg.Blockchain{}).Where("id = ?", id)}
+}
+
+func (r *blockchainUpdater) Execute(ctx context.Context) error {
+	_, err := r.updateQuery.Exec(ctx)
+	return err
+}
+
+func (r *blockchainUpdater) Label(label *string) pkg.BlockchainUpdater {
+	r.updateQuery = r.updateQuery.Set("label = ?", label)
+	return r
+}
