@@ -20,7 +20,7 @@ func New() pkg.RpcEngine {
 }
 
 func (e *rpcEngine) CreateBlockchain(ctx context.Context, apiKey uuid.UUID) (uuid.UUID, error) {
-	r, err := http.NewRequest(http.MethodPost, "https://rpc.mirror.ad/blockchains", nil)
+	r, err := http.NewRequest(http.MethodPost, "https://engine.mirror.ad/blockchains", nil)
 	if err != nil {
 		log.Println("error creating request", err)
 		return uuid.Nil, pkg.ErrHttpRequest
@@ -78,7 +78,7 @@ func removeMirrorRPC(url string) string {
 }
 
 func (e *rpcEngine) DeleteBlockchain(ctx context.Context, apiKey uuid.UUID, blockchainID uuid.UUID) error {
-	r, err := http.NewRequest(http.MethodDelete, "https://rpc.mirror.ad/rpc/"+blockchainID.String(), nil)
+	r, err := http.NewRequest(http.MethodDelete, "https://engine.mirror.ad/rpc/"+blockchainID.String(), nil)
 	if err != nil {
 		log.Println("error creating request", err)
 		return pkg.ErrHttpRequest
