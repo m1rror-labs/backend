@@ -30,6 +30,9 @@ func (r *userReader) ExecuteOne(ctx context.Context) (pkg.User, error) {
 	if err != nil {
 		return pkg.User{}, err
 	}
+	if len(*r.users) == 0 {
+		return pkg.User{}, pkg.ErrNotFound
+	}
 	return (*r.users)[0], err
 }
 
@@ -102,6 +105,9 @@ func (r *teamReader) ExecuteOne(ctx context.Context) (pkg.Team, error) {
 	if err != nil {
 		return pkg.Team{}, err
 	}
+	if len(*r.teams) == 0 {
+		return pkg.Team{}, pkg.ErrNotFound
+	}
 	return (*r.teams)[0], nil
 }
 
@@ -154,6 +160,9 @@ func (r *apiKeyReader) ExecuteOne(ctx context.Context) (pkg.ApiKey, error) {
 	err := r.selectQuery.Limit(1).Scan(ctx)
 	if err != nil {
 		return pkg.ApiKey{}, err
+	}
+	if len(*r.apiKeys) == 0 {
+		return pkg.ApiKey{}, pkg.ErrNotFound
 	}
 	return (*r.apiKeys)[0], err
 }

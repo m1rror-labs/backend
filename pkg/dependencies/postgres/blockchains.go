@@ -30,6 +30,9 @@ func (r *blockchainReader) ExecuteOne(ctx context.Context) (pkg.Blockchain, erro
 	if err != nil {
 		return pkg.Blockchain{}, err
 	}
+	if len(*r.blockchains) == 0 {
+		return pkg.Blockchain{}, pkg.ErrNotFound
+	}
 	return (*r.blockchains)[0], err
 }
 

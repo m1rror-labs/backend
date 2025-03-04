@@ -99,4 +99,5 @@ const (
 	ErrTooManyApiKeys = Err("Too many api keys")
 	ErrHttpRequest    = Err("HTTP request error")
 	ErrNoApiKey       = Err("No api key")
+	ErrNotFound       = Err("Not found")
 )
