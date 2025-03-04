@@ -41,13 +41,6 @@ func (a *App) AttachBlockchainRoutes() {
 			return
 		}
 
-		if len(user.Team.ApiKeys) == 0 {
-			if err := users.CreateApiKey(c, a.repo, user); err != nil {
-				c.JSON(500, gin.H{"error": err.Error()})
-				return
-			}
-		}
-
 		blockchainID, err := uuid.Parse(c.Param("id"))
 		if err != nil {
 			c.JSON(400, gin.H{"error": err.Error()})

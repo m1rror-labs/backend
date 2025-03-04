@@ -40,8 +40,9 @@ func NewApp(
 	engine := gin.New()
 	engine.Use(
 		gin.Recovery(),
+		gin.Logger(),
 	)
-	gin.SetMode(gin.ReleaseMode)
+	gin.SetMode(gin.DebugMode)
 
 	config := cors.Config{
 		AllowAllOrigins:  true,
