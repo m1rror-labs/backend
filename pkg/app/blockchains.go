@@ -24,6 +24,12 @@ func (a *App) AttachBlockchainRoutes() {
 				c.JSON(500, gin.H{"error": err.Error()})
 				return
 			}
+			u, err := users.GetUserSelf(c, a.repo, email)
+			if err != nil {
+				c.JSON(500, gin.H{"error": err.Error()})
+				return
+			}
+			user = u
 		}
 
 		blockchain, err := blockchains.CreateBlockchain(c, a.rpcEngine, a.repo, user)
@@ -71,6 +77,12 @@ func (a *App) AttachBlockchainRoutes() {
 				c.JSON(500, gin.H{"error": err.Error()})
 				return
 			}
+			u, err := users.GetUserSelf(c, a.repo, email)
+			if err != nil {
+				c.JSON(500, gin.H{"error": err.Error()})
+				return
+			}
+			user = u
 		}
 
 		blockchainID, err := uuid.Parse(c.Param("id"))
