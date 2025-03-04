@@ -15,5 +15,5 @@ func GetTransactionLogs(
 	page,
 	limit int,
 ) ([]pkg.TransactionLogMessage, int, error) {
-	return transactionRepo.ReadTransactionLogMessages().TeamID(user.Team.ID).Paginate(page, limit).OrderCreatedAt("DESC").ExecuteWithCount(ctx)
+	return transactionRepo.ReadTransactionLogMessages().TeamID(user.Team.ID).BlockchainID(blockchainID).Paginate(page, limit).OrderCreatedAt("DESC").ExecuteWithCount(ctx)
 }

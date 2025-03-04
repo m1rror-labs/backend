@@ -17,6 +17,7 @@ func TestReadLogs(t *testing.T) {
 
 	logs, err := rep.ReadTransactionLogMessages().
 		TeamID(uuid.MustParse("2b55bd68-dee3-40b6-ac3f-0d71f5519679")).
+		BlockchainID(uuid.MustParse("41335c33-c715-4a07-9c55-4818ef900a97")).
 		Paginate(1, 10).
 		OrderCreatedAt("DESC").
 		Execute(context.Background())

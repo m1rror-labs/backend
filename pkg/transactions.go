@@ -44,6 +44,7 @@ type TransactionLogMessagesReader interface {
 	ExecuteOne(ctx context.Context) (TransactionLogMessage, error)
 
 	TeamID(teamID uuid.UUID) TransactionLogMessagesReader
+	BlockchainID(blockchainID uuid.UUID) TransactionLogMessagesReader
 	Paginate(page int, limit int) TransactionLogMessagesReader
 
 	OrderCreatedAt(order string) TransactionLogMessagesReader

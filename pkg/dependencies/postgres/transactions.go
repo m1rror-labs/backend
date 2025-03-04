@@ -16,7 +16,7 @@ type transactionLogMessagesReader struct {
 }
 
 func (r *repository) ReadTransactionLogMessages() pkg.TransactionLogMessagesReader {
-	var transactionLogMessages []pkg.TransactionLogMessage
+	var transactionLogMessages []pkg.TransactionLogMessage = []pkg.TransactionLogMessage{}
 	return &transactionLogMessagesReader{selectQuery: r.db.NewSelect().Model(&transactionLogMessages), transactionLogMessages: &transactionLogMessages}
 }
 
@@ -48,6 +48,12 @@ func (r *transactionLogMessagesReader) ExecuteOne(ctx context.Context) (pkg.Tran
 func (r *transactionLogMessagesReader) TeamID(teamID uuid.UUID) pkg.TransactionLogMessagesReader {
 	r.selectQuery = r.selectQuery.Relation("Transaction.Blockchain").
 		Where("transaction__blockchain.team_id = ?", teamID)
+	return r
+}
+
+func (r *transactionLogMessagesReader) BlockchainID(blockchainID uuid.UUID) pkg.TransactionLogMessagesReader {
+	r.selectQuery = r.selectQuery.Relation("Transaction").
+		Where("transaction.blockchain = ?", blockchainID)
 	return r
 }
 
