@@ -3,6 +3,7 @@ package blockchains
 import (
 	"context"
 	"mirror-backend/pkg"
+	"mirror-backend/pkg/dependencies/randomtext"
 
 	"github.com/google/uuid"
 )
@@ -14,6 +15,11 @@ func CreateBlockchain(ctx context.Context, rpcEngine pkg.RpcEngine, blockchainRe
 	apiKey := user.Team.ApiKeys[0].ID
 	blockchainID, err := rpcEngine.CreateBlockchain(ctx, apiKey)
 	if err != nil {
+		return pkg.Blockchain{}, err
+	}
+
+	label := randomtext.GenerateRandomText()
+	if err := blockchainRepo.UpdateBlockchain(blockchainID).Label(&label).Execute(ctx); err != nil {
 		return pkg.Blockchain{}, err
 	}
 
