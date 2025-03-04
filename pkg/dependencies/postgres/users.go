@@ -33,7 +33,14 @@ func (r *userReader) ExecuteOne(ctx context.Context) (pkg.User, error) {
 	if len(*r.users) == 0 {
 		return pkg.User{}, pkg.ErrNotFound
 	}
-	return (*r.users)[0], err
+	user := (*r.users)[0]
+	if user.Team.Blockchains == nil {
+		user.Team.Blockchains = []pkg.Blockchain{}
+	}
+	if user.Team.ApiKeys == nil {
+		user.Team.ApiKeys = []pkg.ApiKey{}
+	}
+	return user, err
 }
 
 func (r *userReader) ID(id uuid.UUID) pkg.UserReader {

@@ -11,26 +11,26 @@ import (
 
 type User struct {
 	bun.BaseModel `bun:"table:users,alias:u"`
-	ID            uuid.UUID `json:"id,omitempty" bun:"type:uuid,default:uuid_generate_v4(),pk"`
+	ID            uuid.UUID `json:"id" bun:"type:uuid,default:uuid_generate_v4(),pk"`
 	CreatedAt     time.Time `json:"created_at" bun:",nullzero,notnull,default:current_timestamp"`
 	Email         string    `json:"email" bun:",notnull"`
 	TeamID        uuid.UUID `json:"team_id" bun:"type:uuid,notnull"`
-	Team          *Team     `json:"team,omitempty" bun:"teams,rel:has-one,join:team_id=id"`
+	Team          *Team     `json:"team" bun:"teams,rel:has-one,join:team_id=id"`
 }
 
 type Team struct {
 	bun.BaseModel `bun:"table:teams"`
-	ID            uuid.UUID    `json:"id,omitempty" bun:"type:uuid,default:uuid_generate_v4(),pk"`
+	ID            uuid.UUID    `json:"id" bun:"type:uuid,default:uuid_generate_v4(),pk"`
 	CreatedAt     time.Time    `json:"created_at" bun:",nullzero,notnull,default:current_timestamp"`
 	Name          string       `json:"name" bun:",notnull"`
-	Users         []User       `json:"users,omitempty" bun:"rel:has-many,join:id=team_id"`
-	ApiKeys       []ApiKey     `json:"api_keys,omitempty" bun:"rel:has-many,join:id=team_id"`
-	Blockchains   []Blockchain `json:"blockchains,omitempty" bun:"rel:has-many,join:id=team_id"`
+	Users         []User       `json:"users" bun:"rel:has-many,join:id=team_id"`
+	ApiKeys       []ApiKey     `json:"api_keys" bun:"rel:has-many,join:id=team_id"`
+	Blockchains   []Blockchain `json:"blockchains" bun:"rel:has-many,join:id=team_id"`
 }
 
 type ApiKey struct {
 	bun.BaseModel `bun:"table:api_keys"`
-	ID            uuid.UUID `json:"id,omitempty" bun:"type:uuid,default:uuid_generate_v4(),pk"`
+	ID            uuid.UUID `json:"id" bun:"type:uuid,default:uuid_generate_v4(),pk"`
 	CreatedAt     time.Time `json:"created_at" bun:",nullzero,notnull,default:current_timestamp"`
 	TeamID        uuid.UUID `json:"team_id" bun:"type:uuid,notnull"`
 	Label         string    `json:"label" bun:",notnull"`
