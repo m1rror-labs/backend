@@ -19,7 +19,8 @@ func main() {
 	dbUrl := os.Getenv("DATABASE_URL")
 	repo := postgres.NewRepository(dbUrl)
 
-	rpcEngine := rpcengine.New()
+	engineURL := os.Getenv("ENGINE_URL")
+	rpcEngine := rpcengine.New(engineURL)
 
 	env := os.Getenv("ENV")
 

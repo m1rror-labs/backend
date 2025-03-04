@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"log"
 	"mirror-backend/pkg"
@@ -13,14 +14,16 @@ import (
 	"github.com/google/uuid"
 )
 
-type rpcEngine struct{}
+type rpcEngine struct {
+	url string
+}
 
-func New() pkg.RpcEngine {
-	return &rpcEngine{}
+func New(url string) pkg.RpcEngine {
+	return &rpcEngine{url}
 }
 
 func (e *rpcEngine) CreateBlockchain(ctx context.Context, apiKey uuid.UUID) (uuid.UUID, error) {
-	r, err := http.NewRequest(http.MethodPost, "https://engine.mirror.ad/blockchains", nil)
+	r, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/blockchains", e.url), nil)
 	if err != nil {
 		log.Println("error creating request", err)
 		return uuid.Nil, pkg.ErrHttpRequest
@@ -78,7 +81,7 @@ func removeMirrorRPC(url string) string {
 }
 
 func (e *rpcEngine) DeleteBlockchain(ctx context.Context, apiKey uuid.UUID, blockchainID uuid.UUID) error {
-	r, err := http.NewRequest(http.MethodDelete, "https://engine.mirror.ad/rpc/"+blockchainID.String(), nil)
+	r, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("%s/rpc/%s", e.url, blockchainID.String()), nil)
 	if err != nil {
 		log.Println("error creating request", err)
 		return pkg.ErrHttpRequest
