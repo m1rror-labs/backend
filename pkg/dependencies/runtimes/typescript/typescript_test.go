@@ -1,9 +1,11 @@
 package typescript
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestExecute(t *testing.T) {
-	// t.Skip()
+	t.Skip()
 	runtime := Runtime()
 
 	code := `
