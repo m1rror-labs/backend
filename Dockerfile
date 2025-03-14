@@ -18,6 +18,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build ./cmd/main.go
 
 WORKDIR /app/pkg/dependencies/runtimes/typescript
 RUN npm install
+WORKDIR /app
 
 # Run the application
 CMD ["./main"]
