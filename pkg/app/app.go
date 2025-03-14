@@ -69,6 +69,7 @@ func NewApp(
 func (a *App) Run() {
 	a.AttachStandardRoutes()
 	a.AttachBlockchainRoutes()
+	a.AttachCodeExecRoutes()
 	a.AttachTransactionRoutes()
 	a.AttachUserRoutes()
 
