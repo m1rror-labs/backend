@@ -16,5 +16,8 @@ COPY . .
 RUN go mod download
 RUN CGO_ENABLED=0 GOOS=linux go build ./cmd/main.go
 
+WORKDIR /pkg/dependencies/runtimes/typescript
+RUN npm install
+
 # Run the application
 CMD ["./main"]
