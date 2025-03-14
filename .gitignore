@@ -2,3 +2,4 @@
 main
 *.csv
 .vscode
+**/node_modules
