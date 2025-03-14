@@ -18,13 +18,9 @@ func Runtime() pkg.CodeExecutor {
 }
 
 func (r *runtime) ExecuteCode(code string) (string, error) {
-	code =`import { Crypto } from 'node-webcrypto-ossl';
-	globalThis.crypto = new Crypto();
-	` +code
-
 	id := uuid.NewString()
 	filename := "./" + id + ".ts"
-	fullFilename := "./pkg/dependencies/runtimes/typescript/"+id+".ts"
+	fullFilename := "./pkg/dependencies/runtimes/typescript/" + id + ".ts"
 	err := os.WriteFile(fullFilename, []byte(code), 0644)
 	if err != nil {
 		return "", err
@@ -33,7 +29,6 @@ func (r *runtime) ExecuteCode(code string) (string, error) {
 	defer os.Remove(filename)
 	defer os.Remove("./dist/" + id + ".mjs")
 
-	
 	// Compile the TypeScript file to JavaScript
 	cmd := exec.Command("npx", "tsc", "-t", "es2022", "-m", "es2022", "--moduleResolution", "node", "--outDir", "dist", filename)
 	cmd.Dir = "./pkg/dependencies/runtimes/typescript"
@@ -51,7 +46,7 @@ func (r *runtime) ExecuteCode(code string) (string, error) {
 	defer os.Remove(mjsFilename)
 
 	// Run the resulting JavaScript file
-	shortMjsFilename := "./dist/"+id+".mjs"
+	shortMjsFilename := "./dist/" + id + ".mjs"
 	cmd = exec.Command("node", "--no-warnings", shortMjsFilename)
 	cmd.Dir = "./pkg/dependencies/runtimes/typescript"
 	output, err := cmd.CombinedOutput()
