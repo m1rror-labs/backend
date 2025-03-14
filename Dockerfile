@@ -1,7 +1,5 @@
 FROM golang:1.24
 
-# Install ImageMagick which is required to convert PDF to images
-RUN apt-get update && apt-get install -y build-essential imagemagick
 
 # Install Node.js and npm
 RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
