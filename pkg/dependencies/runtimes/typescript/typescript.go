@@ -18,6 +18,10 @@ func Runtime() pkg.CodeExecutor {
 }
 
 func (r *runtime) ExecuteCode(code string) (string, error) {
+	code =`import { Crypto } from 'node-webcrypto-ossl';
+	globalThis.crypto = new Crypto();
+	` +code
+
 	id := uuid.NewString()
 	filename := "./" + id + ".ts"
 	fullFilename := "./pkg/dependencies/runtimes/typescript/"+id+".ts"
