@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"mirror-backend/pkg"
+	"mirror-backend/pkg/dependencies/runtimes/typescript"
 	"net/http"
 	"os"
 	"os/signal"
@@ -29,6 +30,7 @@ type App struct {
 	auth      pkg.Auth
 	repo      pkg.Repository
 	rpcEngine pkg.RpcEngine
+	tsRuntime pkg.CodeExecutor
 }
 
 func NewApp(
@@ -60,6 +62,7 @@ func NewApp(
 		auth:      auth,
 		repo:      repo,
 		rpcEngine: rpcEngine,
+		tsRuntime: typescript.Runtime(),
 	}
 }
 
