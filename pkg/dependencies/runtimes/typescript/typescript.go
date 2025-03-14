@@ -50,5 +50,5 @@ func (r *runtime) ExecuteCode(code string) (string, error) {
 		return "", fmt.Errorf("error running JavaScript: %s", string(output))
 	}
 	fmt.Println(string(output)) // Print the console logs
-	return filename, nil
+	return string(output), nil
 }
