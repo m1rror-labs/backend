@@ -10,11 +10,12 @@ import (
 
 type Blockchain struct {
 	bun.BaseModel  `bun:"table:blockchains"`
-	ID             uuid.UUID `json:"id,omitempty" bun:"type:uuid,default:uuid_generate_v4(),pk"`
-	CreatedAt      time.Time `json:"created_at" bun:",nullzero,notnull,default:current_timestamp"`
-	AirdropKeypair []byte    `json:"-" bun:",nullzero,notnull"`
-	TeamID         uuid.UUID `json:"team_id" bun:"type:uuid,notnull"`
-	Label          *string   `json:"label" bun:",notnull"`
+	ID             uuid.UUID  `json:"id,omitempty" bun:"type:uuid,default:uuid_generate_v4(),pk"`
+	CreatedAt      time.Time  `json:"created_at" bun:",nullzero,notnull,default:current_timestamp"`
+	AirdropKeypair []byte     `json:"-" bun:",nullzero,notnull"`
+	TeamID         uuid.UUID  `json:"team_id" bun:"type:uuid,notnull"`
+	Label          *string    `json:"label" bun:",notnull"`
+	Expiry         *time.Time `json:"expiry"`
 }
 
 type RpcEngine interface {

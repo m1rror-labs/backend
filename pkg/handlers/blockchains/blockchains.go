@@ -30,9 +30,6 @@ func UpdateBlockchain(ctx context.Context, blockchainRepo pkg.BlockchainRepo, us
 	authorized := false
 	for _, key := range user.Team.Blockchains {
 		if key.ID == newBlockchain.ID { // Ensure the key ID is not changed
-			newBlockchain.TeamID = key.TeamID                 // Ensure the team ID is not changed
-			newBlockchain.CreatedAt = key.CreatedAt           // Ensure the created at time is not changed
-			newBlockchain.AirdropKeypair = key.AirdropKeypair // Ensure the airdrop keypair is not changed
 			authorized = true
 		}
 	}
