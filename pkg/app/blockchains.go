@@ -133,7 +133,9 @@ func (a *App) AttachBlockchainRoutes() {
 		})
 	})
 
-	go ProtectedFunc(func() {
-		blockchains.ExpireBlockchains(context.Background(), a.rpcEngine)
-	})
+	if a.env != "dev" {
+		go ProtectedFunc(func() {
+			blockchains.ExpireBlockchains(context.Background(), a.rpcEngine)
+		})
+	}
 }
