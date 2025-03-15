@@ -1,6 +1,7 @@
 package app
 
 import (
+	"context"
 	"mirror-backend/pkg"
 	"mirror-backend/pkg/handlers/blockchains"
 	"mirror-backend/pkg/handlers/users"
@@ -130,6 +131,9 @@ func (a *App) AttachBlockchainRoutes() {
 			"logs":  logs,
 			"count": count,
 		})
+	})
 
+	go ProtectedFunc(func() {
+		blockchains.ExpireBlockchains(context.Background(), a.rpcEngine)
 	})
 }

@@ -4,7 +4,9 @@ import (
 	"context"
 	"mirror-backend/pkg"
 	"mirror-backend/pkg/dependencies/randomtext"
+	"time"
 
+	"github.com/go-co-op/gocron/v2"
 	"github.com/google/uuid"
 )
 
@@ -46,4 +48,23 @@ func DeleteBlockchain(ctx context.Context, rpcEngine pkg.RpcEngine, blockchainRe
 	}
 	apiKey := user.Team.ApiKeys[0].ID
 	return rpcEngine.DeleteBlockchain(ctx, apiKey, blockchainID)
+}
+
+func ExpireBlockchains(ctx context.Context, rpcEngine pkg.RpcEngine) error {
+	// create a cron job that runs something every 30 mins
+	tz, _ := time.LoadLocation("America/Denver")
+	scheduler, err := gocron.NewScheduler(gocron.WithLocation(tz))
+	if err != nil {
+		return err
+	}
+
+	scheduler.NewJob(
+		gocron.CronJob("30 * * * *", false),
+		gocron.NewTask(func() {
+			rpcEngine.ExpireBlockchains(ctx)
+		}),
+	)
+
+	scheduler.Start()
+	return nil
 }

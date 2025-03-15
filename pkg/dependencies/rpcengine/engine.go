@@ -120,3 +120,43 @@ func (e *rpcEngine) DeleteBlockchain(ctx context.Context, apiKey uuid.UUID, bloc
 
 	return nil
 }
+
+func (e *rpcEngine) ExpireBlockchains(ctx context.Context) error {
+	r, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/blockchains/expire", e.url), nil)
+	if err != nil {
+		log.Println("error creating request", err)
+		return pkg.ErrHttpRequest
+	}
+	r.Header.Set("Content-Type", "application/json")
+	r.Header.Set("Accept", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(r)
+	if err != nil {
+		log.Println("error sending request", err)
+		return pkg.ErrHttpRequest
+	}
+
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Println("error reading response body", err)
+		return pkg.ErrHttpRequest
+	}
+
+	type Error struct {
+		Message string `json:"message"`
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		var res Error
+		if err := json.Unmarshal(body, &res); err != nil {
+			log.Println("error unmarshalling error", err, string(body))
+			return pkg.ErrHttpRequest
+		}
+
+		return errors.New(res.Message)
+	}
+
+	return nil
+}

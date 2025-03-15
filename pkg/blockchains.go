@@ -21,6 +21,7 @@ type Blockchain struct {
 type RpcEngine interface {
 	CreateBlockchain(ctx context.Context, apiKey uuid.UUID) (uuid.UUID, error)
 	DeleteBlockchain(ctx context.Context, apiKey uuid.UUID, id uuid.UUID) error
+	ExpireBlockchains(ctx context.Context) error
 }
 
 type BlockchainRepo interface {
