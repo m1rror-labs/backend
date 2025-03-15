@@ -64,7 +64,7 @@ func (a *DefaultAuth) ApiKey(userRepo pkg.UserRepo) gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		key, err := userRepo.ReadApiKey().ID(apiKey).WithTeam().ExecuteOne(c)
+		key, err := userRepo.ReadApiKey().ID(apiKey).ExecuteOne(c)
 		if err != nil {
 			c.Status(http.StatusForbidden)
 			c.Abort()
