@@ -30,7 +30,6 @@ func (r *runtime) ExecuteCode(code string) (string, error) {
 	defer os.Remove(fullFilename)
 	defer os.Remove(filename)
 	defer os.Remove("./dist/" + id + ".mjs")
-	log.Println("time taken to write file:", time.Since(now)) // Log the time taken to write the file
 
 	// Compile the TypeScript file to JavaScript
 	cmd := exec.Command("npx", "tsc", "-t", "es2022", "-m", "es2022", "--moduleResolution", "node", "--outDir", "dist", filename)
@@ -40,6 +39,7 @@ func (r *runtime) ExecuteCode(code string) (string, error) {
 		return "", fmt.Errorf("error compiling TypeScript: %s", string(output))
 	}
 	log.Println("time taken to compile TypeScript:", time.Since(now)) // Log the time taken to compile
+	now = time.Now()                                                  // Reset the timer after compilation
 
 	jsFilename := "./pkg/dependencies/runtimes/typescript/dist/" + id + ".js"
 	mjsFilename := "./pkg/dependencies/runtimes/typescript/dist/" + id + ".mjs"
@@ -50,7 +50,6 @@ func (r *runtime) ExecuteCode(code string) (string, error) {
 	defer os.Remove(mjsFilename)
 
 	// Run the resulting JavaScript file
-	log.Println("time taken to rename file:", time.Since(now)) // Log the time taken to rename the file
 	shortMjsFilename := "./dist/" + id + ".mjs"
 	cmd = exec.Command("node", "--no-warnings", shortMjsFilename)
 	cmd.Dir = "./pkg/dependencies/runtimes/typescript"
