@@ -32,7 +32,7 @@ func (r *runtime) ExecuteCode(code string) (string, error) {
 	defer os.Remove("./dist/" + id + ".mjs")
 
 	// Compile the TypeScript file to JavaScript
-	cmd := exec.Command("npx", "tsc", "-t", "es2022", "-m", "es2022", "--moduleResolution", "node", "--outDir", "dist", filename)
+	cmd := exec.Command("npx", "tsc", "-t", "es2022", "-m", "es2022", "--skipLibCheck", "--moduleResolution", "node", "--outDir", "dist", filename)
 	cmd.Dir = "./pkg/dependencies/runtimes/typescript"
 	if output, err := cmd.CombinedOutput(); err != nil {
 		fmt.Println("Error compiling TypeScript:", string(output)) // Print the error logs
