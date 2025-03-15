@@ -6,6 +6,7 @@ import (
 	"mirror-backend/pkg"
 	"os"
 	"os/exec"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -18,6 +19,7 @@ func Runtime() pkg.CodeExecutor {
 }
 
 func (r *runtime) ExecuteCode(code string) (string, error) {
+	now := time.Now()
 	id := uuid.NewString()
 	filename := "./" + id + ".ts"
 	fullFilename := "./pkg/dependencies/runtimes/typescript/" + id + ".ts"
@@ -28,6 +30,7 @@ func (r *runtime) ExecuteCode(code string) (string, error) {
 	defer os.Remove(fullFilename)
 	defer os.Remove(filename)
 	defer os.Remove("./dist/" + id + ".mjs")
+	log.Println("time taken to write file:", time.Since(now)) // Log the time taken to write the file
 
 	// Compile the TypeScript file to JavaScript
 	cmd := exec.Command("npx", "tsc", "-t", "es2022", "-m", "es2022", "--moduleResolution", "node", "--outDir", "dist", filename)
@@ -36,6 +39,7 @@ func (r *runtime) ExecuteCode(code string) (string, error) {
 		fmt.Println("Error compiling TypeScript:", string(output)) // Print the error logs
 		return "", fmt.Errorf("error compiling TypeScript: %s", string(output))
 	}
+	log.Println("time taken to compile TypeScript:", time.Since(now)) // Log the time taken to compile
 
 	jsFilename := "./pkg/dependencies/runtimes/typescript/dist/" + id + ".js"
 	mjsFilename := "./pkg/dependencies/runtimes/typescript/dist/" + id + ".mjs"
@@ -46,6 +50,7 @@ func (r *runtime) ExecuteCode(code string) (string, error) {
 	defer os.Remove(mjsFilename)
 
 	// Run the resulting JavaScript file
+	log.Println("time taken to rename file:", time.Since(now)) // Log the time taken to rename the file
 	shortMjsFilename := "./dist/" + id + ".mjs"
 	cmd = exec.Command("node", "--no-warnings", shortMjsFilename)
 	cmd.Dir = "./pkg/dependencies/runtimes/typescript"
@@ -54,6 +59,6 @@ func (r *runtime) ExecuteCode(code string) (string, error) {
 		log.Println(err)
 		return "", fmt.Errorf("error running JavaScript: %s", string(output))
 	}
-	fmt.Println(string(output)) // Print the console logs
+	fmt.Println("time taken to run JavaScript:", time.Since(now)) // Log the time taken to run the JavaScript
 	return string(output), nil
 }
