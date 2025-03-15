@@ -97,3 +97,18 @@ func TestReadTeam(t *testing.T) {
 	}
 	t.Fatal(teams)
 }
+
+func TestReadApiKey(t *testing.T) {
+	t.Skip()
+	godotenv.Load("../../../.env")
+	url := os.Getenv("DATABASE_URL")
+	rep := InitRepository(url)
+
+	apiKeys, err := rep.ReadApiKey().
+		WithTeam().
+		ExecuteOne(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Fatal(*apiKeys.Team)
+}

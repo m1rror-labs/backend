@@ -123,6 +123,11 @@ func (r *teamReader) ID(id uuid.UUID) pkg.TeamReader {
 	return r
 }
 
+func (r *teamReader) ApiKey(key uuid.UUID) pkg.TeamReader {
+	r.selectQuery = r.selectQuery.Relation("ApiKeys")
+	return r
+}
+
 func (r *teamReader) WithUsers() pkg.TeamReader {
 	r.selectQuery = r.selectQuery.Relation("Users")
 	return r
@@ -175,12 +180,17 @@ func (r *apiKeyReader) ExecuteOne(ctx context.Context) (pkg.ApiKey, error) {
 }
 
 func (r *apiKeyReader) ID(id uuid.UUID) pkg.ApiKeyReader {
-	r.selectQuery = r.selectQuery.Where("id = ?", id)
+	r.selectQuery = r.selectQuery.Where("api_key.id = ?", id)
 	return r
 }
 
 func (r *apiKeyReader) TeamID(teamID uuid.UUID) pkg.ApiKeyReader {
 	r.selectQuery = r.selectQuery.Where("team_id = ?", teamID)
+	return r
+}
+
+func (r *apiKeyReader) WithTeam() pkg.ApiKeyReader {
+	r.selectQuery = r.selectQuery.Relation("Team")
 	return r
 }
 

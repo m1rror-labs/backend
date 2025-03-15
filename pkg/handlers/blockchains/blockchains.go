@@ -15,7 +15,7 @@ func CreateBlockchain(ctx context.Context, rpcEngine pkg.RpcEngine, blockchainRe
 		return pkg.Blockchain{}, pkg.ErrNoApiKey
 	}
 	apiKey := user.Team.ApiKeys[0].ID
-	blockchainID, err := rpcEngine.CreateBlockchain(ctx, apiKey)
+	blockchainID, err := rpcEngine.CreateBlockchain(ctx, apiKey, nil)
 	if err != nil {
 		return pkg.Blockchain{}, err
 	}
@@ -26,6 +26,25 @@ func CreateBlockchain(ctx context.Context, rpcEngine pkg.RpcEngine, blockchainRe
 	}
 
 	return blockchainRepo.ReadBlockchain().ID(blockchainID).ExecuteOne(ctx)
+}
+
+func CreateBlockchainSession(
+	ctx context.Context,
+	blockchainRepo pkg.BlockchainRepo,
+	rpcEngine pkg.RpcEngine,
+	userID string,
+	apiKey pkg.ApiKey,
+) (uuid.UUID, error) {
+	existingBlockchains, err := blockchainRepo.ReadBlockchain().TeamID(apiKey.TeamID).Label(&userID).Execute(ctx)
+	if err != nil {
+		return uuid.Nil, err
+	}
+
+	if len(existingBlockchains) > 0 {
+		return existingBlockchains[0].ID, nil
+	}
+
+	return rpcEngine.CreateBlockchain(ctx, apiKey.ID, &userID)
 }
 
 func UpdateBlockchain(ctx context.Context, blockchainRepo pkg.BlockchainRepo, user pkg.User, newBlockchain pkg.Blockchain) error {

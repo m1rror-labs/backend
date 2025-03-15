@@ -9,6 +9,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
+	"github.com/google/uuid"
 )
 
 type DefaultAuth struct {
@@ -51,6 +52,26 @@ func (a *DefaultAuth) User() gin.HandlerFunc {
 		}
 
 		c.Set("email", email)
+	}
+}
+
+func (a *DefaultAuth) ApiKey(userRepo pkg.UserRepo) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		apiKeyStr := c.GetHeader("api_key")
+		apiKey, err := uuid.Parse(apiKeyStr)
+		if err != nil {
+			c.Status(http.StatusForbidden)
+			c.Abort()
+			return
+		}
+		key, err := userRepo.ReadApiKey().ID(apiKey).WithTeam().ExecuteOne(c)
+		if err != nil {
+			c.Status(http.StatusForbidden)
+			c.Abort()
+			return
+		}
+
+		c.Set("key", key)
 	}
 }
 

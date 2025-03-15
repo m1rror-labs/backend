@@ -19,7 +19,7 @@ type Blockchain struct {
 }
 
 type RpcEngine interface {
-	CreateBlockchain(ctx context.Context, apiKey uuid.UUID) (uuid.UUID, error)
+	CreateBlockchain(ctx context.Context, apiKey uuid.UUID, user_id *string) (uuid.UUID, error)
 	DeleteBlockchain(ctx context.Context, apiKey uuid.UUID, id uuid.UUID) error
 	ExpireBlockchains(ctx context.Context) error
 }
@@ -36,6 +36,7 @@ type BlockchainReader interface {
 
 	ID(id uuid.UUID) BlockchainReader
 	TeamID(teamID uuid.UUID) BlockchainReader
+	Label(label *string) BlockchainReader
 }
 
 type BlockchainUpdater interface {

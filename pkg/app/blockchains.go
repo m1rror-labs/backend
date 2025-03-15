@@ -41,6 +41,23 @@ func (a *App) AttachBlockchainRoutes() {
 
 		c.JSON(200, blockchain)
 	})
+	a.engine.POST("/blockchains/session", a.auth.ApiKey(a.repo), func(c *gin.Context) {
+		key, _ := c.Get("key")
+		apiKey := key.(pkg.ApiKey)
+
+		userID := c.GetHeader("user_id")
+		if userID == "" {
+			c.JSON(400, gin.H{"error": "user_id header is required"})
+			return
+		}
+
+		blockchainID, err := blockchains.CreateBlockchainSession(c, a.repo, a.rpcEngine, userID, apiKey)
+		if err != nil {
+			c.JSON(500, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(200, gin.H{"url": "https://engine.mirror.ad/rpc/" + blockchainID.String()})
+	})
 	a.engine.PUT("/blockchains/:id", a.auth.User(), func(c *gin.Context) {
 		email := c.GetString("email")
 		user, err := users.GetUserSelf(c, a.repo, email)

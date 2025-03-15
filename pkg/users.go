@@ -33,11 +33,13 @@ type ApiKey struct {
 	ID            uuid.UUID `json:"id" bun:"type:uuid,default:uuid_generate_v4(),pk"`
 	CreatedAt     time.Time `json:"created_at" bun:",nullzero,notnull,default:current_timestamp"`
 	TeamID        uuid.UUID `json:"team_id" bun:"type:uuid,notnull"`
+	Team          *Team     `json:"team" bun:"teams,rel:has-one,join:team_id=id"`
 	Label         string    `json:"label" bun:",notnull"`
 }
 
 type Auth interface {
 	User() gin.HandlerFunc
+	ApiKey(userRepo UserRepo) gin.HandlerFunc
 }
 
 type UserRepo interface {
@@ -86,6 +88,8 @@ type ApiKeyReader interface {
 
 	ID(id uuid.UUID) ApiKeyReader
 	TeamID(teamID uuid.UUID) ApiKeyReader
+
+	WithTeam() ApiKeyReader
 }
 
 type Err string

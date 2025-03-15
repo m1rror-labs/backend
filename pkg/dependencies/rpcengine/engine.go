@@ -22,7 +22,7 @@ func New(url string) pkg.RpcEngine {
 	return &rpcEngine{url}
 }
 
-func (e *rpcEngine) CreateBlockchain(ctx context.Context, apiKey uuid.UUID) (uuid.UUID, error) {
+func (e *rpcEngine) CreateBlockchain(ctx context.Context, apiKey uuid.UUID, user_id *string) (uuid.UUID, error) {
 	r, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/blockchains", e.url), nil)
 	if err != nil {
 		log.Println("error creating request", err)
@@ -31,6 +31,9 @@ func (e *rpcEngine) CreateBlockchain(ctx context.Context, apiKey uuid.UUID) (uui
 	r.Header.Set("Content-Type", "application/json")
 	r.Header.Set("Accept", "application/json")
 	r.Header.Set("api_key", apiKey.String())
+	if user_id != nil {
+		r.Header.Set("user_id", *user_id)
+	}
 
 	client := &http.Client{}
 	resp, err := client.Do(r)

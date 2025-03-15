@@ -46,6 +46,11 @@ func (r *blockchainReader) TeamID(teamID uuid.UUID) pkg.BlockchainReader {
 	return r
 }
 
+func (r *blockchainReader) Label(label *string) pkg.BlockchainReader {
+	r.selectQuery = r.selectQuery.Where("label = ?", label)
+	return r
+}
+
 type blockchainUpdater struct {
 	updateQuery *bun.UpdateQuery
 }
