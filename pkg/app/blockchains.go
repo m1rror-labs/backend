@@ -41,7 +41,7 @@ func (a *App) AttachBlockchainRoutes() {
 
 		c.JSON(200, blockchain)
 	})
-	a.engine.POST("/blockchains/session", a.auth.ApiKey(a.repo), func(c *gin.Context) {
+	a.engine.POST("/blockchains/sessions", a.auth.ApiKey(a.repo), func(c *gin.Context) {
 		key, _ := c.Get("key")
 		apiKey := key.(pkg.ApiKey)
 
