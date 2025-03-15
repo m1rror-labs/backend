@@ -39,9 +39,13 @@ func CreateBlockchainSession(
 	if err != nil {
 		return uuid.Nil, err
 	}
-
 	if len(existingBlockchains) > 0 {
-		return existingBlockchains[0].ID, nil
+		existingBlockchain := existingBlockchains[0]
+		if existingBlockchain.Expiry != nil && existingBlockchain.Expiry.Before(time.Now()) {
+			go rpcEngine.DeleteBlockchain(ctx, apiKey.ID, existingBlockchain.ID)
+		} else {
+			return existingBlockchain.ID, nil
+		}
 	}
 
 	return rpcEngine.CreateBlockchain(ctx, apiKey.ID, &userID)
