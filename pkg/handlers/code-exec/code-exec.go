@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"mirror-backend/pkg"
+	"net/url"
 	"regexp"
 	"time"
 
@@ -15,7 +16,17 @@ type ExecuteCodeRequest struct {
 	Code string `json:"code" binding:"required"`
 }
 
-func RunCode(ctx context.Context, code string, codeExecutor pkg.CodeExecutor, transactionRepo pkg.TransactionRepo) (string, []pkg.TransactionLogMessage, error) {
+type LogWithUrl struct {
+	ID                   uuid.UUID       `json:"id"`
+	CreatedAt            time.Time       `json:"created_at"`
+	Url                  string          `json:"url"`
+	TransactionSignature string          `json:"transaction_signature"`
+	Log                  string          `json:"log"`
+	Index                int             `json:"index"`
+	Transaction          pkg.Transaction `json:"transaction"`
+}
+
+func RunCode(ctx context.Context, code string, codeExecutor pkg.CodeExecutor, transactionRepo pkg.TransactionRepo) (string, []LogWithUrl, error) {
 	engineID, err := parseEngineUrl(code)
 	if err != nil {
 		return "", nil, errors.New("code must contain a valid engine URL")
@@ -33,7 +44,22 @@ func RunCode(ctx context.Context, code string, codeExecutor pkg.CodeExecutor, tr
 		return "", nil, err
 	}
 
-	return output, logs, nil
+	var logsWithUrl []LogWithUrl = []LogWithUrl{}
+	for _, log := range logs {
+		blockchainUrl := fmt.Sprintf("https://engine.mirror.ad/rpc/%s", engineID)
+
+		logsWithUrl = append(logsWithUrl, LogWithUrl{
+			ID:                   log.ID,
+			CreatedAt:            log.CreatedAt,
+			Url:                  fmt.Sprintf("https://explorer.solana.com/tx/%s?cluster=custom&customUrl=%s", log.TransactionSignature, url.QueryEscape(blockchainUrl)),
+			TransactionSignature: log.TransactionSignature,
+			Log:                  log.Log,
+			Index:                log.Index,
+			Transaction:          log.Transaction,
+		})
+	}
+
+	return output, logsWithUrl, nil
 }
 
 func parseEngineUrl(code string) (uuid.UUID, error) {
