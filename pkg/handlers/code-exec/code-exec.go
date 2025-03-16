@@ -2,6 +2,7 @@ package codeexec
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"mirror-backend/pkg"
 	"regexp"
@@ -17,7 +18,7 @@ type ExecuteCodeRequest struct {
 func RunCode(ctx context.Context, code string, codeExecutor pkg.CodeExecutor, transactionRepo pkg.TransactionRepo) (string, []pkg.TransactionLogMessage, error) {
 	engineID, err := parseEngineUrl(code)
 	if err != nil {
-		return "", nil, err
+		return "", nil, errors.New("code must contain a valid engine URL")
 	}
 
 	start := time.Now()
