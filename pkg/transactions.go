@@ -10,14 +10,14 @@ import (
 
 type Transaction struct {
 	bun.BaseModel   `bun:"table:transactions"`
-	ID              uuid.UUID  `json:"id" bun:"type:uuid,default:uuid_generate_v4(),pk"`
-	CreatedAt       time.Time  `json:"created_at" bun:",nullzero,notnull,default:current_timestamp"`
-	Version         string     `json:"version" bun:",notnull"`
-	RecentBlockhash []byte     `json:"recent_blockhash" bun:",notnull"`
-	Slot            int        `json:"slot" bun:",notnull"`
-	BlockchainID    uuid.UUID  `json:"blockchain_id" bun:"blockchain,type:uuid,notnull"`
-	Signature       string     `json:"signature" bun:",notnull"`
-	Blockchain      Blockchain `json:"blockchain" bun:"rel:has-one,join:blockchain=id"`
+	ID              uuid.UUID   `json:"id" bun:"type:uuid,default:uuid_generate_v4(),pk"`
+	CreatedAt       time.Time   `json:"created_at" bun:",nullzero,notnull,default:current_timestamp"`
+	Version         string      `json:"version" bun:",notnull"`
+	RecentBlockhash []byte      `json:"recent_blockhash" bun:",notnull"`
+	Slot            int         `json:"slot" bun:",notnull"`
+	BlockchainID    uuid.UUID   `json:"blockchain_id" bun:"blockchain,type:uuid,notnull"`
+	Signature       string      `json:"signature" bun:",notnull"`
+	Blockchain      *Blockchain `json:"blockchain,omitempty" bun:"rel:has-one,join:blockchain=id"`
 
 	Logs []TransactionLogMessage `json:"logs" bun:"rel:has-many,join:signature=transaction_signature"`
 }
@@ -46,6 +46,7 @@ type TransactionLogMessagesReader interface {
 	TeamID(teamID uuid.UUID) TransactionLogMessagesReader
 	BlockchainID(blockchainID uuid.UUID) TransactionLogMessagesReader
 	Paginate(page int, limit int) TransactionLogMessagesReader
+	Between(start time.Time, end time.Time) TransactionLogMessagesReader
 
 	OrderCreatedAt(order string) TransactionLogMessagesReader
 }

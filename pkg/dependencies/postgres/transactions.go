@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"mirror-backend/pkg"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/uptrace/bun"
@@ -64,6 +65,11 @@ func (r *transactionLogMessagesReader) Paginate(page int, limit int) pkg.Transac
 }
 
 func (r *transactionLogMessagesReader) OrderCreatedAt(order string) pkg.TransactionLogMessagesReader {
-	r.selectQuery = r.selectQuery.Order("created_at " + order)
+	r.selectQuery = r.selectQuery.Order("transaction_log_message.created_at " + order)
+	return r
+}
+
+func (r *transactionLogMessagesReader) Between(start, end time.Time) pkg.TransactionLogMessagesReader {
+	r.selectQuery = r.selectQuery.Where("transaction_log_message.created_at BETWEEN ? AND ?", start, end)
 	return r
 }

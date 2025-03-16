@@ -14,12 +14,13 @@ func (a *App) AttachCodeExecRoutes() {
 			return
 		}
 
-		output, err := codeexec.RunCode(c, request.Code, a.tsRuntime)
+		output,logs, err := codeexec.RunCode(c, request.Code, a.tsRuntime, a.repo)
 		if err != nil {
 			c.JSON(500, gin.H{"error": err.Error()})
 			return
 		}
+		
 
-		c.JSON(200, gin.H{"output": output})
+		c.JSON(200, gin.H{"output": output, "logs": logs})
 	})
 }
