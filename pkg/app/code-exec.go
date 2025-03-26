@@ -16,7 +16,7 @@ func (a *App) AttachCodeExecRoutes() {
 
 		output,logs, err := codeexec.RunCode(c, request.Code, a.tsRuntime, a.repo)
 		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
+			c.JSON(500, gin.H{"error": err.Error(), "output": output, "logs": logs})
 			return
 		}
 		

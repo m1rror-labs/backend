@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"log"
 	"mirror-backend/pkg"
 	"mirror-backend/pkg/handlers/blockchains"
 	"mirror-backend/pkg/handlers/users"
@@ -53,6 +54,7 @@ func (a *App) AttachBlockchainRoutes() {
 
 		blockchainID, err := blockchains.CreateBlockchainSession(c, a.repo, a.rpcEngine, userID, apiKey)
 		if err != nil {
+			log.Println("Error creating session", err)
 			c.JSON(500, gin.H{"error": err.Error()})
 			return
 		}
