@@ -4,6 +4,9 @@ FROM golang:1.24
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install -y nodejs
 
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+
 # Install TypeScript globally
 RUN npm install -g typescript
 
@@ -17,6 +20,10 @@ RUN CGO_ENABLED=0 GOOS=linux go build ./cmd/main.go
 
 WORKDIR /app/pkg/dependencies/runtimes/typescript
 RUN npm install
+
+WORKDIR /app/pkg/dependencies/runtimes/rust
+RUN cargo build
+
 WORKDIR /app
 
 # Run the application

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"mirror-backend/pkg"
+	"mirror-backend/pkg/dependencies/runtimes/rust"
 	"mirror-backend/pkg/dependencies/runtimes/typescript"
 	"net/http"
 	"os"
@@ -25,12 +26,13 @@ var _ = websocket.Upgrader{
 }
 
 type App struct {
-	env       string
-	engine    *gin.Engine
-	auth      pkg.Auth
-	repo      pkg.Repository
-	rpcEngine pkg.RpcEngine
-	tsRuntime pkg.CodeExecutor
+	env         string
+	engine      *gin.Engine
+	auth        pkg.Auth
+	repo        pkg.Repository
+	rpcEngine   pkg.RpcEngine
+	tsRuntime   pkg.CodeExecutor
+	rustRuntime pkg.CodeExecutor
 }
 
 func NewApp(
@@ -57,12 +59,13 @@ func NewApp(
 	engine.Use(cors.New(config))
 
 	return &App{
-		env:       env,
-		engine:    engine,
-		auth:      auth,
-		repo:      repo,
-		rpcEngine: rpcEngine,
-		tsRuntime: typescript.Runtime(),
+		env:         env,
+		engine:      engine,
+		auth:        auth,
+		repo:        repo,
+		rpcEngine:   rpcEngine,
+		tsRuntime:   typescript.Runtime(),
+		rustRuntime: rust.Runtime(),
 	}
 }
 
