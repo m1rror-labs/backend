@@ -24,6 +24,7 @@ WORKDIR /app/pkg/dependencies/runtimes/typescript
 RUN npm install
 
 WORKDIR /app/pkg/dependencies/runtimes/rust
+RUN cargo fetch
 RUN cargo build
 
 WORKDIR /app
