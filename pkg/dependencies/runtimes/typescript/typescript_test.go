@@ -1,12 +1,13 @@
 package typescript
 
 import (
+	"mirror-backend/pkg/dependencies/multisync"
 	"testing"
 )
 
 func TestExecute(t *testing.T) {
 	t.Skip()
-	runtime := Runtime()
+	runtime := Runtime(multisync.NewMutex(1))
 
 	code := `
 	import {

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"mirror-backend/pkg"
+	"mirror-backend/pkg/dependencies/multisync"
 	"mirror-backend/pkg/dependencies/runtimes/rust"
 	"mirror-backend/pkg/dependencies/runtimes/typescript"
 	"net/http"
@@ -57,6 +58,7 @@ func NewApp(
 		MaxAge:           12 * time.Hour,
 	}
 	engine.Use(cors.New(config))
+	runtimesMu := multisync.NewMutex(20)
 
 	return &App{
 		env:         env,
@@ -64,8 +66,8 @@ func NewApp(
 		auth:        auth,
 		repo:        repo,
 		rpcEngine:   rpcEngine,
-		tsRuntime:   typescript.Runtime(),
-		rustRuntime: rust.Runtime(),
+		tsRuntime:   typescript.Runtime(runtimesMu),
+		rustRuntime: rust.Runtime(runtimesMu),
 	}
 }
 
@@ -73,6 +75,7 @@ func (a *App) Run() {
 	a.AttachStandardRoutes()
 	a.AttachBlockchainRoutes()
 	a.AttachCodeExecRoutes()
+	a.AttachLoadTestEndpoints()
 	a.AttachTransactionRoutes()
 	a.AttachUserRoutes()
 
