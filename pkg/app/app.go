@@ -75,7 +75,6 @@ func (a *App) Run() {
 	a.AttachStandardRoutes()
 	a.AttachBlockchainRoutes()
 	a.AttachCodeExecRoutes()
-	a.AttachLoadTestEndpoints()
 	a.AttachTransactionRoutes()
 	a.AttachUserRoutes()
 
