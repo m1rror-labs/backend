@@ -25,7 +25,7 @@ RUN npm install
 
 WORKDIR /app/pkg/dependencies/runtimes/rust
 RUN cargo fetch
-RUN cargo build --release
+RUN cargo build --release --bin main
 
 WORKDIR /app
 
