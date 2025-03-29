@@ -25,6 +25,7 @@ func (r *runtime) ExecuteCode(code string) (string, error) {
 	fullFilename := "./pkg/dependencies/runtimes/typescript/" + id + ".ts"
 	err := os.WriteFile(fullFilename, []byte(code), 0644)
 	if err != nil {
+		log.Println("Error writing TypeScript file:", err)
 		return "", err
 	}
 	defer os.Remove(fullFilename)
@@ -46,6 +47,7 @@ func (r *runtime) ExecuteCode(code string) (string, error) {
 	mjsFilename := "./pkg/dependencies/runtimes/typescript/dist/" + id + ".mjs"
 	err = os.Rename(jsFilename, mjsFilename)
 	if err != nil {
+		log.Println("Error renaming JavaScript file:", err)
 		return "", fmt.Errorf("error renaming file: %s", err)
 	}
 	defer os.Remove(mjsFilename)
@@ -56,7 +58,7 @@ func (r *runtime) ExecuteCode(code string) (string, error) {
 	cmd.Dir = "./pkg/dependencies/runtimes/typescript"
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		log.Println(err)
+		log.Println("Error running JavaScript:", err)
 		return "", fmt.Errorf("error running JavaScript: %s", string(output))
 	}
 	fmt.Println("time taken to run JavaScript:", time.Since(now)) // Log the time taken to run the JavaScript
