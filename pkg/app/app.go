@@ -58,7 +58,7 @@ func NewApp(
 		MaxAge:           12 * time.Hour,
 	}
 	engine.Use(cors.New(config))
-	runtimesMu := multisync.NewMutex(20)
+	runtimesMu := multisync.NewMutex(10)
 
 	return &App{
 		env:         env,
