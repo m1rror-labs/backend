@@ -21,9 +21,9 @@ func Runtime(mu *multisync.Mutex) pkg.CodeExecutor {
 }
 
 func (r *runtime) ExecuteCode(code string) (string, error) {
-	// awaiting := r.mu.Acquire()
-	// defer r.mu.Release()
-	// <-awaiting
+	awaiting := r.mu.Acquire()
+	defer r.mu.Release()
+	<-awaiting
 
 	now := time.Now()
 	id := uuid.NewString()
