@@ -6,11 +6,14 @@ import (
 	"mirror-backend/pkg/dependencies/postgres"
 	"mirror-backend/pkg/dependencies/rpcengine"
 	"os"
+	"runtime"
 
 	"github.com/joho/godotenv"
 )
 
 func main() {
+	runtime.GOMAXPROCS(12)
+
 	godotenv.Load()
 
 	supabaseJwtKey := os.Getenv("SUPABASE_JWT_SECRET")
