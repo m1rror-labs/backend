@@ -56,7 +56,7 @@ func (e *rpcEngine) CreateBlockchain(ctx context.Context, apiKey uuid.UUID, user
 	if resp.StatusCode != http.StatusOK {
 		var res Error
 		if err := json.Unmarshal(body, &res); err != nil {
-			log.Println("error unmarshalling error", err, string(body))
+			log.Println("error unmarshalling error", resp.StatusCode, err, string(body))
 			return uuid.Nil, pkg.ErrHttpRequest
 		}
 		return uuid.Nil, errors.New(res.Message)
@@ -78,7 +78,7 @@ func (e *rpcEngine) CreateBlockchain(ctx context.Context, apiKey uuid.UUID, user
 }
 
 func removeMirrorRPC(url string) string {
-    re := regexp.MustCompile(`https?://(rpc\.mirror\.ad/rpc/|localhost:8899/rpc/)`)
+	re := regexp.MustCompile(`https?://(rpc\.mirror\.ad/rpc/|localhost:8899/rpc/)`)
 	return re.ReplaceAllString(url, "")
 }
 
