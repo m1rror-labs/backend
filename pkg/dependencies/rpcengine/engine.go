@@ -1,6 +1,7 @@
 package rpcengine
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -22,8 +23,19 @@ func New(url string) pkg.RpcEngine {
 	return &rpcEngine{url}
 }
 
-func (e *rpcEngine) CreateBlockchain(ctx context.Context, apiKey uuid.UUID, user_id *string) (uuid.UUID, error) {
-	r, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/blockchains", e.url), nil)
+type createBlockchainRequest struct {
+	Config *uuid.UUID `json:"config"`
+}
+
+func (e *rpcEngine) CreateBlockchain(ctx context.Context, apiKey uuid.UUID, user_id *string, config *uuid.UUID) (uuid.UUID, error) {
+	reqBody := createBlockchainRequest{Config: config}
+	reqBytes, err := json.Marshal(reqBody)
+	if err != nil {
+		log.Println("error marshalling request", err)
+		return uuid.Nil, pkg.ErrHttpRequest
+	}
+
+	r, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/blockchains", e.url), bytes.NewReader(reqBytes))
 	if err != nil {
 		log.Println("error creating request", err)
 		return uuid.Nil, pkg.ErrHttpRequest

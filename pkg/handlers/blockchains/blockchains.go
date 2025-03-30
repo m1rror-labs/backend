@@ -15,7 +15,7 @@ func CreateBlockchain(ctx context.Context, rpcEngine pkg.RpcEngine, blockchainRe
 		return pkg.Blockchain{}, pkg.ErrNoApiKey
 	}
 	apiKey := user.Team.ApiKeys[0].ID
-	blockchainID, err := rpcEngine.CreateBlockchain(ctx, apiKey, nil)
+	blockchainID, err := rpcEngine.CreateBlockchain(ctx, apiKey, nil, nil)
 	if err != nil {
 		return pkg.Blockchain{}, err
 	}
@@ -48,7 +48,9 @@ func CreateBlockchainSession(
 		}
 	}
 
-	return rpcEngine.CreateBlockchain(ctx, apiKey.ID, &userID)
+	config := uuid.MustParse("3cdb3f0e-5f8a-4000-a31a-c6821f92c2cc")
+
+	return rpcEngine.CreateBlockchain(ctx, apiKey.ID, &userID, &config)
 }
 
 func UpdateBlockchain(ctx context.Context, blockchainRepo pkg.BlockchainRepo, user pkg.User, newBlockchain pkg.Blockchain) error {
