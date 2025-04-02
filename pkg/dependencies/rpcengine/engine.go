@@ -29,7 +29,7 @@ type createBlockchainRequest struct {
 }
 
 func (e *rpcEngine) CreateBlockchain(ctx context.Context, apiKey uuid.UUID, user_id *string, config *uuid.UUID) (uuid.UUID, error) {
-	reqBody := createBlockchainRequest{Config: config, DeferAccountInitiation: true}
+	reqBody := createBlockchainRequest{Config: config, DeferAccountInitiation: false}
 	reqBytes, err := json.Marshal(reqBody)
 	if err != nil {
 		log.Println("error marshalling request", err)
