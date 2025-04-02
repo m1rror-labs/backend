@@ -24,11 +24,12 @@ func New(url string) pkg.RpcEngine {
 }
 
 type createBlockchainRequest struct {
-	Config *uuid.UUID `json:"config"`
+	Config                 *uuid.UUID `json:"config"`
+	DeferAccountInitiation bool       `json:"defer_account_initiation"`
 }
 
 func (e *rpcEngine) CreateBlockchain(ctx context.Context, apiKey uuid.UUID, user_id *string, config *uuid.UUID) (uuid.UUID, error) {
-	reqBody := createBlockchainRequest{Config: config}
+	reqBody := createBlockchainRequest{Config: config, DeferAccountInitiation: true}
 	reqBytes, err := json.Marshal(reqBody)
 	if err != nil {
 		log.Println("error marshalling request", err)
