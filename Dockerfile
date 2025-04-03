@@ -37,6 +37,7 @@ WORKDIR /app/pkg/dependencies/runtimes/typescript
 RUN npm install
 
 WORKDIR /app/pkg/dependencies/runtimes/rust
+RUN rustup override set nightly
 RUN cargo fetch
 RUN cargo build --release --bin main
 
