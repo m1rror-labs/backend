@@ -1,45 +1,4 @@
-FROM ubuntu:22.04
-
-
-ARG DEBIAN_FRONTEND=noninteractive
-
-ARG SOLANA_CLI=2.1.14 
-ARG ANCHOR_CLI=0.30.0
-ARG NODE_VERSION="v20.16.0"
-
-ENV HOME="/root"
-ENV PATH="${HOME}/.cargo/bin:${PATH}"
-ENV PATH="${HOME}/.local/share/solana/install/active_release/bin:${PATH}"
-ENV PATH="${HOME}/.nvm/versions/node/${NODE_VERSION}/bin:${PATH}"
-
-# Install base utilities.
-RUN mkdir -p /workdir && mkdir -p /tmp && \
-    apt-get update -qq && apt-get upgrade -qq && apt-get install -qq \
-    build-essential git curl wget jq pkg-config python3-pip \
-    libssl-dev libudev-dev
-
-# Install rust.
-RUN curl "https://sh.rustup.rs" -sfo rustup.sh && \
-    sh rustup.sh -y && \
-    rustup component add rustfmt clippy
-
-# Install node / npm / yarn.
-RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
-ENV NVM_DIR="${HOME}/.nvm"
-RUN . $NVM_DIR/nvm.sh && \
-    nvm install ${NODE_VERSION} && \
-    nvm use ${NODE_VERSION} && \
-    nvm alias default node && \
-    npm install -g yarn
-
-# Install Solana tools.
-RUN sh -c "$(curl -sSfL https://release.anza.xyz/${SOLANA_CLI}/install)"
-
-# Install anchor.
-RUN cargo install --git https://github.com/coral-xyz/anchor --tag ${ANCHOR_CLI} anchor-cli --locked
-
-# Build a dummy program to bootstrap the BPF SDK (doing this speeds up builds).
-RUN mkdir -p /tmp && cd tmp && anchor init dummy && cd dummy && anchor build
+FROM backpackapp/build:v0.30.1
 
 RUN apt-get update && apt-get install -y wget curl
 RUN wget https://golang.org/dl/go1.24.0.linux-amd64.tar.gz && \
@@ -47,7 +6,23 @@ RUN wget https://golang.org/dl/go1.24.0.linux-amd64.tar.gz && \
     rm go1.24.0.linux-amd64.tar.gz
 ENV PATH="/usr/local/go/bin:${PATH}"
 
-RUN mkdir -p /tmp && cd tmp && anchor init dummy && cd dummy && anchor build
+# Install Node.js and npm
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs
+
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    pkg-config \
+    libudev-dev \
+    llvm \
+    libclang-dev \
+    protobuf-compiler \
+    libssl-dev \
+    libc6 \
+    ghdl
+
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
 
 # Install TypeScript globally
 RUN npm install -g typescript
