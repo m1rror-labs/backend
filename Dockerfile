@@ -37,7 +37,7 @@ WORKDIR /app/pkg/dependencies/runtimes/typescript
 RUN npm install
 
 WORKDIR /app/pkg/dependencies/runtimes/rust
-RUN rustup update nightly
+RUN rustup update nightly --profile minimal
 RUN rustup default nightly
 RUN cargo fetch
 RUN cargo build --release --bin main
