@@ -12,21 +12,17 @@ ENV PATH="/usr/local/go/bin:${PATH}"
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install -y nodejs
 
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    pkg-config \
-    libudev-dev \
-    llvm \
-    libclang-dev \
-    protobuf-compiler \
-    libssl-dev \
-    libc6 \
-    ghdl
+RUN mkdir -p /workdir && mkdir -p /tmp && \
+    apt-get update -qq && apt-get upgrade -qq && apt-get install -qq \
+    build-essential git curl wget jq pkg-config python3-pip \
+    libssl-dev libudev-dev
 
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
 RUN curl --proto '=https' --tlsv1.2 -sSfL https://solana-install.solana.workers.dev | bash
+
+RUN mkdir -p /tmp && cd tmp && anchor init dummy && cd dummy && anchor build
 
 # Install TypeScript globally
 RUN npm install -g typescript
