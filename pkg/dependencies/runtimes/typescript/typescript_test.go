@@ -7,7 +7,7 @@ import (
 
 func TestExecute(t *testing.T) {
 	t.Skip()
-	runtime := Runtime(multisync.NewMutex(1))
+	runtime := NewRuntime(multisync.NewMutex(1))
 
 	code := `
 	import {

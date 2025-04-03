@@ -16,7 +16,7 @@ type runtime struct {
 	mu *multisync.Mutex
 }
 
-func Runtime(mu *multisync.Mutex) pkg.CodeExecutor {
+func NewRuntime(mu *multisync.Mutex) pkg.CodeExecutor {
 	return &runtime{mu}
 }
 

@@ -39,4 +39,20 @@ func (a *App) AttachCodeExecRoutes() {
 
 		c.JSON(200, gin.H{"output": output, "logs": logs})
 	})
+	a.engine.POST("/code-exec/programs/anchor", func(c *gin.Context) {
+		var request codeexec.BuildProgramRequest
+		if err := c.ShouldBindJSON(&request); err != nil {
+			c.JSON(400, gin.H{"error": err.Error()})
+			return
+		}
+
+		err := codeexec.BuildAndLoadProgram(c, request.Code, request.ProgramID, request.BlockchainID, a.anchorRuntime, a.rpcEngine)
+		if err != nil {
+			log.Println(err)
+			c.JSON(400, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(200, gin.H{"message": "Program built and loaded successfully"})
+	})
 }

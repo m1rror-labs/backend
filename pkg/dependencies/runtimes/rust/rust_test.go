@@ -7,7 +7,7 @@ import (
 
 func TestExecuteCode(t *testing.T) {
 	t.Skip()
-	r := Runtime(multisync.NewMutex(1))
+	r := NewRuntime(multisync.NewMutex(1))
 	output, err := r.ExecuteCode("fn main() { println!(\"Hello, world!\"); }")
 	if err != nil {
 		t.Errorf("Error executing Rust code: %s", err)

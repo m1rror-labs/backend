@@ -7,6 +7,7 @@ import (
 	"log"
 	"mirror-backend/pkg"
 	"mirror-backend/pkg/dependencies/multisync"
+	"mirror-backend/pkg/dependencies/runtimes/anchor"
 	"mirror-backend/pkg/dependencies/runtimes/rust"
 	"mirror-backend/pkg/dependencies/runtimes/typescript"
 	"net/http"
@@ -27,13 +28,14 @@ var _ = websocket.Upgrader{
 }
 
 type App struct {
-	env         string
-	engine      *gin.Engine
-	auth        pkg.Auth
-	repo        pkg.Repository
-	rpcEngine   pkg.RpcEngine
-	tsRuntime   pkg.CodeExecutor
-	rustRuntime pkg.CodeExecutor
+	env           string
+	engine        *gin.Engine
+	auth          pkg.Auth
+	repo          pkg.Repository
+	rpcEngine     pkg.RpcEngine
+	tsRuntime     pkg.CodeExecutor
+	rustRuntime   pkg.CodeExecutor
+	anchorRuntime pkg.ProgramBuilder
 }
 
 func NewApp(
@@ -61,13 +63,14 @@ func NewApp(
 	runtimesMu := multisync.NewMutex(10)
 
 	return &App{
-		env:         env,
-		engine:      engine,
-		auth:        auth,
-		repo:        repo,
-		rpcEngine:   rpcEngine,
-		tsRuntime:   typescript.Runtime(runtimesMu),
-		rustRuntime: rust.Runtime(runtimesMu),
+		env:           env,
+		engine:        engine,
+		auth:          auth,
+		repo:          repo,
+		rpcEngine:     rpcEngine,
+		tsRuntime:     typescript.NewRuntime(runtimesMu),
+		rustRuntime:   rust.NewRuntime(runtimesMu),
+		anchorRuntime: anchor.NewRuntime(runtimesMu),
 	}
 }
 

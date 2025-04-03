@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"mime/multipart"
 	"mirror-backend/pkg"
 	"net/http"
 	"regexp"
@@ -169,6 +170,73 @@ func (e *rpcEngine) ExpireBlockchains(ctx context.Context) error {
 			log.Println("error unmarshalling error", err, string(body))
 			return pkg.ErrHttpRequest
 		}
+
+		return errors.New(res.Message)
+	}
+
+	return nil
+}
+
+func (e *rpcEngine) LoadProgram(ctx context.Context, blockchainID uuid.UUID, programID string, programBinary []byte) error {
+	var buf bytes.Buffer
+	writer := multipart.NewWriter(&buf)
+
+	// Add the program binary as a file part
+	part, err := writer.CreateFormFile("program", "program.so")
+	if err != nil {
+		log.Println("error creating form file", err)
+		return pkg.ErrHttpRequest
+	}
+	if _, err := part.Write(programBinary); err != nil {
+		log.Println("error writing program binary", err)
+		return pkg.ErrHttpRequest
+	}
+
+	// Add other form fields if necessary
+	if err := writer.WriteField("program_id", programID); err != nil {
+		log.Println("error writing form field", err)
+		return pkg.ErrHttpRequest
+	}
+
+	// Close the writer to finalize the multipart message
+	if err := writer.Close(); err != nil {
+		log.Println("error closing writer", err)
+		return pkg.ErrHttpRequest
+	}
+
+	r, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/programs/%s", e.url, blockchainID.String()), &buf)
+	if err != nil {
+		log.Println("error creating request", err)
+		return pkg.ErrHttpRequest
+	}
+	r.Header.Set("Content-Type", "multipart/form-data; boundary="+writer.Boundary())
+	r.Header.Set("Accept", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(r)
+	if err != nil {
+		log.Println("error sending request", err)
+		return pkg.ErrHttpRequest
+	}
+
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Println("error reading response body", err)
+		return pkg.ErrHttpRequest
+	}
+
+	type Error struct {
+		Message string `json:"message"`
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		var res Error
+		if err := json.Unmarshal(body, &res); err != nil {
+			log.Println("error unmarshalling error", err, string(body))
+			return pkg.ErrHttpRequest
+		}
+		log.Println("error unmarshalling error", err, string(body))
 
 		return errors.New(res.Message)
 	}

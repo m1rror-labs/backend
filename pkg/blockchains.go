@@ -22,6 +22,8 @@ type RpcEngine interface {
 	CreateBlockchain(ctx context.Context, apiKey uuid.UUID, user_id *string, config *uuid.UUID) (uuid.UUID, error)
 	DeleteBlockchain(ctx context.Context, apiKey uuid.UUID, id uuid.UUID) error
 	ExpireBlockchains(ctx context.Context) error
+
+	LoadProgram(ctx context.Context, blockchainID uuid.UUID, programID string, programBinary []byte) error
 }
 
 type BlockchainRepo interface {
