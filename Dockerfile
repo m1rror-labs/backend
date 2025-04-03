@@ -1,4 +1,4 @@
-FROM woahbase/alpine-glibc:2.39
+FROM debian:latest
 
 RUN apt-get update && apt-get install -y wget curl
 RUN wget https://golang.org/dl/go1.24.0.linux-amd64.tar.gz && \
