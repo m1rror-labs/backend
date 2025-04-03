@@ -9,6 +9,8 @@ RUN apt-get update && apt-get install -y libudev-dev libssl-dev pkg-config
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
+RUN curl --proto '=https' --tlsv1.2 -sSfL https://solana-install.solana.workers.dev | bash
+
 # Install TypeScript globally
 RUN npm install -g typescript
 
