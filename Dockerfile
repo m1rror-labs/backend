@@ -8,10 +8,11 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     pkg-config \
     libudev-dev \
-    libudev-dev llvm libclang-dev \
-    protobuf-compiler libssl-dev \
-    pkg-config
-
+    llvm \
+    libclang-dev \
+    protobuf-compiler \
+    libssl-dev
+    
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
