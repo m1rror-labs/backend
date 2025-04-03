@@ -1,4 +1,4 @@
-FROM golang:tip-bullseye
+FROM golang:tip-alpine
 
 # Install Node.js and npm
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
