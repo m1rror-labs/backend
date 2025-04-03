@@ -1,5 +1,8 @@
 FROM backpackapp/build:v0.30.1
 
+RUN rustup update nightly -- --profile minimal
+RUN rustup default nightly
+
 RUN apt-get update && apt-get install -y wget curl
 RUN wget https://golang.org/dl/go1.24.0.linux-amd64.tar.gz && \
     tar -C /usr/local -xzf go1.24.0.linux-amd64.tar.gz && \
@@ -37,8 +40,6 @@ WORKDIR /app/pkg/dependencies/runtimes/typescript
 RUN npm install
 
 WORKDIR /app/pkg/dependencies/runtimes/rust
-RUN rustup update nightly --profile minimal
-RUN rustup default nightly
 RUN cargo fetch
 RUN cargo build --release --bin main
 
