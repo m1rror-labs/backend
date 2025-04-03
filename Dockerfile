@@ -1,6 +1,6 @@
 FROM backpackapp/build:v0.30.1
 
-RUN rustup toolchain uninstall stable && rustup toolchain install stabl
+RUN rustup toolchain uninstall stable && rustup toolchain install stable
 
 RUN apt-get update && apt-get install -y wget curl
 RUN wget https://golang.org/dl/go1.24.0.linux-amd64.tar.gz && \
