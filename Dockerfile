@@ -1,4 +1,4 @@
-FROM golang:1.24
+FROM golang:1.24.2-bookworm
 
 # Install Node.js and npm
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
     libclang-dev \
     protobuf-compiler \
     libssl-dev \
-    glibc
+    libc6
 
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
