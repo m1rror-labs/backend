@@ -1,4 +1,12 @@
-FROM golang:1.24
+FROM solanafoundation/anchor:v0.31.0
+
+RUN apk add --no-cache wget
+RUN wget https://go.dev/dl/go1.22.2.linux-amd64.tar.gz
+RUN tar -xvf go1.22.2.linux-amd64.tar.gz
+RUN mv go /usr/local
+
+ENV GOPATH /go
+ENV PATH /usr/local/go/bin:$PATH:$GOPATH/bin
 
 # Install Node.js and npm
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
@@ -8,8 +16,6 @@ RUN apt-get update && apt-get install -y libudev-dev libssl-dev pkg-config
 
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
-
-RUN curl --proto '=https' --tlsv1.2 -sSfL https://solana-install.solana.workers.dev | bash
 
 # Install TypeScript globally
 RUN npm install -g typescript
