@@ -104,4 +104,7 @@ const (
 	ErrHttpRequest    = Err("HTTP request error")
 	ErrNoApiKey       = Err("No api key")
 	ErrNotFound       = Err("Not found")
+
+	ErrInvalidPubkey   = Err("Invalid pubkey")
+	ErrAccountNotFound = Err("Account not found")
 )

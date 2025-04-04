@@ -28,14 +28,15 @@ var _ = websocket.Upgrader{
 }
 
 type App struct {
-	env           string
-	engine        *gin.Engine
-	auth          pkg.Auth
-	repo          pkg.Repository
-	rpcEngine     pkg.RpcEngine
-	tsRuntime     pkg.CodeExecutor
-	rustRuntime   pkg.CodeExecutor
-	anchorRuntime pkg.ProgramBuilder
+	env              string
+	engine           *gin.Engine
+	auth             pkg.Auth
+	repo             pkg.Repository
+	rpcEngine        pkg.RpcEngine
+	tsRuntime        pkg.CodeExecutor
+	rustRuntime      pkg.CodeExecutor
+	anchorRuntime    pkg.ProgramBuilder
+	accountRetriever pkg.AccountRetriever
 }
 
 func NewApp(
@@ -43,6 +44,7 @@ func NewApp(
 	auth pkg.Auth,
 	repo pkg.Repository,
 	rpcEngine pkg.RpcEngine,
+	accountRetriever pkg.AccountRetriever,
 ) *App {
 	engine := gin.New()
 	engine.Use(
@@ -63,14 +65,15 @@ func NewApp(
 	runtimesMu := multisync.NewMutex(10)
 
 	return &App{
-		env:           env,
-		engine:        engine,
-		auth:          auth,
-		repo:          repo,
-		rpcEngine:     rpcEngine,
-		tsRuntime:     typescript.NewRuntime(runtimesMu),
-		rustRuntime:   rust.NewRuntime(runtimesMu),
-		anchorRuntime: anchor.NewRuntime(runtimesMu),
+		env:              env,
+		engine:           engine,
+		auth:             auth,
+		repo:             repo,
+		rpcEngine:        rpcEngine,
+		tsRuntime:        typescript.NewRuntime(runtimesMu),
+		rustRuntime:      rust.NewRuntime(runtimesMu),
+		anchorRuntime:    anchor.NewRuntime(runtimesMu),
+		accountRetriever: accountRetriever,
 	}
 }
 
