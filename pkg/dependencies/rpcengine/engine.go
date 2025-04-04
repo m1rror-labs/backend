@@ -3,6 +3,7 @@ package rpcengine
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -239,6 +240,63 @@ func (e *rpcEngine) LoadProgram(ctx context.Context, blockchainID uuid.UUID, pro
 		log.Println("error unmarshalling error", err, string(body))
 
 		return errors.New(res.Message)
+	}
+
+	return nil
+}
+
+type setBlockchainRequest struct {
+	Address   string  `json:"address"`
+	Lamports  uint    `json:"lamports"`
+	Data      string  `json:"data"`
+	Owner     string  `json:"owner"`
+	RentEpoch uint    `json:"rent_epoch"`
+	Label     *string `json:"label"`
+}
+
+func (e *rpcEngine) SetAccount(ctx context.Context, blockchainID uuid.UUID, account pkg.SolanaAccount, label *string) error {
+	encodedData := base64.StdEncoding.EncodeToString([]byte(account.Data))
+
+	reqBody := setBlockchainRequest{
+		Address:   account.Address,
+		Lamports:  account.Lamports,
+		Data:      encodedData,
+		Owner:     account.Owner,
+		RentEpoch: account.RentEpoch,
+		Label:     label,
+	}
+	reqBytes, err := json.Marshal(reqBody)
+	if err != nil {
+		log.Println("error marshalling request", err)
+		return pkg.ErrHttpRequest
+	}
+
+	r, err := http.NewRequest(http.MethodPut, fmt.Sprintf("%s/accounts/%s", e.url, blockchainID.String()), bytes.NewReader(reqBytes))
+	if err != nil {
+		log.Println("error creating request", err)
+		return pkg.ErrHttpRequest
+	}
+
+	r.Header.Set("Content-Type", "application/json")
+	r.Header.Set("Accept", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(r)
+	if err != nil {
+		log.Println("error sending request", err)
+		return pkg.ErrHttpRequest
+	}
+
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		log.Println("error response", resp.StatusCode)
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			log.Println("error reading response body", err)
+			return pkg.ErrHttpRequest
+		}
+		log.Println("error unmarshalling error", err, string(body))
+		return pkg.ErrHttpRequest
 	}
 
 	return nil

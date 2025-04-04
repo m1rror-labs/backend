@@ -118,6 +118,7 @@ const (
 
 	ErrInvalidPubkey   = Err("Invalid pubkey")
 	ErrAccountNotFound = Err("Account not found")
+	ErrSettingAccount  = Err("Error setting account")
 )
 
 func ProtectedFunc(f func()) {
