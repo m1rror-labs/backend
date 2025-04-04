@@ -1,58 +1,19 @@
 package app
 
 import (
-	"log"
-	codeexec "mirror-backend/pkg/handlers/code-exec"
+	codeexechandlers "mirror-backend/pkg/handlers/codeExec"
 
 	"github.com/gin-gonic/gin"
 )
 
 func (a *App) AttachCodeExecRoutes() {
 	a.engine.POST("/code-exec/typescript", func(c *gin.Context) {
-		var request codeexec.ExecuteCodeRequest
-		if err := c.ShouldBindJSON(&request); err != nil {
-			c.JSON(400, gin.H{"error": err.Error()})
-			return
-		}
-
-		output, logs, err := codeexec.RunCode(c, request.Code, a.tsRuntime, a.repo)
-		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error(), "output": output, "logs": logs})
-			return
-		}
-
-		c.JSON(200, gin.H{"output": output, "logs": logs})
+		codeexechandlers.ExecuteTypescript(c, a.deps)
 	})
 	a.engine.POST("/code-exec/rust", func(c *gin.Context) {
-		var request codeexec.ExecuteCodeRequest
-		if err := c.ShouldBindJSON(&request); err != nil {
-			c.JSON(400, gin.H{"error": err.Error()})
-			return
-		}
-
-		output, logs, err := codeexec.RunCode(c, request.Code, a.rustRuntime, a.repo)
-		if err != nil {
-			log.Println(err)
-			c.JSON(500, gin.H{"error": err.Error(), "output": output, "logs": logs})
-			return
-		}
-
-		c.JSON(200, gin.H{"output": output, "logs": logs})
+		codeexechandlers.ExecuteRust(c, a.deps)
 	})
 	a.engine.POST("/code-exec/programs/anchor", func(c *gin.Context) {
-		var request codeexec.BuildProgramRequest
-		if err := c.ShouldBindJSON(&request); err != nil {
-			c.JSON(400, gin.H{"error": err.Error()})
-			return
-		}
-
-		err := codeexec.BuildAndLoadProgram(c, request.Code, request.ProgramID, request.BlockchainID, a.anchorRuntime, a.rpcEngine)
-		if err != nil {
-			log.Println(err)
-			c.JSON(400, gin.H{"error": err.Error()})
-			return
-		}
-
-		c.JSON(200, gin.H{"message": "Program built and loaded successfully"})
+		codeexechandlers.BuildAndDeployAnchor(c, a.deps)
 	})
 }

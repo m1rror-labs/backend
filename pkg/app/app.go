@@ -3,7 +3,6 @@ package app
 import (
 	"context"
 	"errors"
-	"fmt"
 	"log"
 	"mirror-backend/pkg"
 	"mirror-backend/pkg/dependencies/multisync"
@@ -28,15 +27,9 @@ var _ = websocket.Upgrader{
 }
 
 type App struct {
-	env              string
-	engine           *gin.Engine
-	auth             pkg.Auth
-	repo             pkg.Repository
-	rpcEngine        pkg.RpcEngine
-	tsRuntime        pkg.CodeExecutor
-	rustRuntime      pkg.CodeExecutor
-	anchorRuntime    pkg.ProgramBuilder
-	accountRetriever pkg.AccountRetriever
+	env    string
+	engine *gin.Engine
+	deps   pkg.Dependencies
 }
 
 func NewApp(
@@ -65,15 +58,17 @@ func NewApp(
 	runtimesMu := multisync.NewMutex(10)
 
 	return &App{
-		env:              env,
-		engine:           engine,
-		auth:             auth,
-		repo:             repo,
-		rpcEngine:        rpcEngine,
-		tsRuntime:        typescript.NewRuntime(runtimesMu),
-		rustRuntime:      rust.NewRuntime(runtimesMu),
-		anchorRuntime:    anchor.NewRuntime(runtimesMu),
-		accountRetriever: accountRetriever,
+		env:    env,
+		engine: engine,
+		deps: pkg.Dependencies{
+			Auth:             auth,
+			Repo:             repo,
+			RpcEngine:        rpcEngine,
+			TsRuntime:        typescript.NewRuntime(runtimesMu),
+			RustRuntime:      rust.NewRuntime(runtimesMu),
+			AnchorRuntime:    anchor.NewRuntime(runtimesMu),
+			AccountRetriever: accountRetriever,
+		},
 	}
 }
 
@@ -118,16 +113,6 @@ func (a *App) AttachStandardRoutes() {
 	a.engine.GET("/status", func(c *gin.Context) {
 		c.JSON(200, gin.H{"status": "ok"})
 	})
-}
-
-func ProtectedFunc(f func()) {
-	defer func() {
-		if r := recover(); r != nil {
-			fmt.Println("Recovered. Error:\n", r)
-		}
-	}()
-
-	f()
 }
 
 func getPort() string {

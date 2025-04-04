@@ -1,53 +1,68 @@
-package users
+package userhandlers
 
 import (
-	"context"
 	"mirror-backend/pkg"
-	"mirror-backend/pkg/dependencies/randomtext"
+	"mirror-backend/pkg/services/users"
 
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
 
-func CreateApiKey(ctx context.Context, userRepo pkg.UserRepo, user pkg.User) error {
-	if len(user.Team.ApiKeys) >= 2 {
-		return pkg.ErrTooManyApiKeys
+func GetApiKeys(c *gin.Context, deps pkg.Dependencies) {
+	email := c.GetString("email")
+	user, err := users.GetUserSelf(c, deps.Repo, email)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
 	}
 
-	key := pkg.ApiKey{
-		TeamID: user.Team.ID,
-		Label:  randomtext.GenerateRandomText(),
+	if err := users.CreateApiKey(c, deps.Repo, user); err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
 	}
-
-	return userRepo.CreateApiKey(ctx, &key)
 }
 
-func UpdateApiKey(ctx context.Context, userRepo pkg.UserRepo, user pkg.User, newKey pkg.ApiKey) error {
-	authorized := false
-	for _, key := range user.Team.ApiKeys {
-		if key.ID == newKey.ID { // Ensure the key ID is not changed
-			newKey.TeamID = key.TeamID       // Ensure the team ID is not changed
-			newKey.CreatedAt = key.CreatedAt // Ensure the created at time is not changed
-			authorized = true
-		}
-	}
-	if !authorized {
-		return pkg.ErrUnauthorized
+func UpdateApiKey(c *gin.Context, deps pkg.Dependencies) {
+	email := c.GetString("email")
+	user, err := users.GetUserSelf(c, deps.Repo, email)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
 	}
 
-	return userRepo.UpdateApiKey(ctx, &newKey)
+	apiKeyID, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	var newKey pkg.ApiKey
+	if err := c.BindJSON(&newKey); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+	}
+	newKey.ID = apiKeyID
+
+	if err := users.UpdateApiKey(c, deps.Repo, user, newKey); err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
 }
 
-func DeleteApiKey(ctx context.Context, userRepo pkg.UserRepo, user pkg.User, id uuid.UUID) error {
-	authorized := false
-	for _, key := range user.Team.ApiKeys {
-		if key.ID == id {
-			authorized = true
-		}
-	}
-	if !authorized {
-		return pkg.ErrUnauthorized
+func DeleteApiKey(c *gin.Context, deps pkg.Dependencies) {
+	email := c.GetString("email")
+	user, err := users.GetUserSelf(c, deps.Repo, email)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
 	}
 
-	key := pkg.ApiKey{ID: id}
-	return userRepo.DeleteApiKey(ctx, &key)
+	apiKeyID, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := users.DeleteApiKey(c, deps.Repo, user, apiKeyID); err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
 }

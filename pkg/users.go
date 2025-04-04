@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -92,6 +93,16 @@ type ApiKeyReader interface {
 	WithTeam() ApiKeyReader
 }
 
+type Dependencies struct {
+	Auth             Auth
+	Repo             Repository
+	RpcEngine        RpcEngine
+	TsRuntime        CodeExecutor
+	RustRuntime      CodeExecutor
+	AnchorRuntime    ProgramBuilder
+	AccountRetriever AccountRetriever
+}
+
 type Err string
 
 func (e Err) Error() string {
@@ -108,3 +119,13 @@ const (
 	ErrInvalidPubkey   = Err("Invalid pubkey")
 	ErrAccountNotFound = Err("Account not found")
 )
+
+func ProtectedFunc(f func()) {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Recovered. Error:\n", r)
+		}
+	}()
+
+	f()
+}
