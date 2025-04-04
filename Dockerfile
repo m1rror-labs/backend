@@ -21,7 +21,8 @@ RUN apt-get update && apt-get install -y \
     protobuf-compiler \
     libssl-dev \
     libc6 \
-    ghdl
+    ghdl \
+    openssl
 
 
 # Install TypeScript globally
