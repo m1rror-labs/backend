@@ -28,7 +28,8 @@ RUN apt-get update && apt-get install -y \
     python3-setuptools \
     python3-wheel \
     make \
-    g++
+    g++ \
+    gcc
 
 
 # Install TypeScript globally
