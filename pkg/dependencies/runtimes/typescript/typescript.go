@@ -60,7 +60,7 @@ func (r *runtime) ExecuteCode(code string) (string, error) {
 
 	// Run the resulting JavaScript file
 	shortMjsFilename := "./dist/" + id + ".mjs"
-	cmd = exec.Command("node", "--no-warnings", shortMjsFilename)
+	cmd = exec.Command("node", "--no-warnings", "--experimental-global-webcrypto", shortMjsFilename)
 	cmd.Dir = "./pkg/dependencies/runtimes/typescript"
 	output, err := cmd.CombinedOutput()
 	if err != nil {

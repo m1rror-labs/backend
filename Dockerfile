@@ -22,18 +22,11 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     libc6 \
     ghdl \
-    openssl \
-    python3 \
-    python3-pip \
-    python3-setuptools \
-    python3-wheel \
-    make \
-    g++ \
-    gcc
+    openssl
 
 
 # Install TypeScript globally
-RUN npm install -g typescript crypto-js node-webcrypto-ossl
+RUN npm install -g typescript
 
 # Copy all files into /app folder
 WORKDIR /app
