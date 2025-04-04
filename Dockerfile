@@ -26,7 +26,7 @@ RUN apt-get update && apt-get install -y \
 
 
 # Install TypeScript globally
-RUN npm install -g typescript
+RUN npm install -g typescript crypto-js
 
 # Copy all files into /app folder
 WORKDIR /app
