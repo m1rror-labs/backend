@@ -22,7 +22,11 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     libc6 \
     ghdl \
-    openssl
+    openssl \
+    python3 \
+    python3-pip \
+    python3-setuptools \
+    python3-wheel
 
 
 # Install TypeScript globally
