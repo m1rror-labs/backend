@@ -16,8 +16,8 @@ func SetMainnetAccountState(c *gin.Context, deps pkg.Dependencies) {
 	}
 
 	type RequestBody struct {
-		Account string  `json:"account"`
-		Label   *string `json:"label,omitempty"`
+		Accounts []string `json:"accounts"`
+		Label    *string  `json:"label,omitempty"`
 	}
 	var requestBody RequestBody
 	if err := c.BindJSON(&requestBody); err != nil {
@@ -30,7 +30,7 @@ func SetMainnetAccountState(c *gin.Context, deps pkg.Dependencies) {
 		deps.RpcEngine,
 		deps.AccountRetriever,
 		blockchainId,
-		requestBody.Account,
+		requestBody.Accounts,
 		requestBody.Label,
 	); err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})

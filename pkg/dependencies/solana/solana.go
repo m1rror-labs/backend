@@ -45,3 +45,39 @@ func (a *accountRetriever) GetAccount(ctx context.Context, address string) (pkg.
 	}, nil
 
 }
+
+func (a *accountRetriever) GetMultipleAccounts(ctx context.Context, addresses []string) ([]pkg.SolanaAccount, error) {
+	rpcClient := rpc.New(a.rpcUrl)
+
+	var pubkeys []solana.PublicKey
+	for _, address := range addresses {
+		pubkey, err := solana.PublicKeyFromBase58(address)
+		if err != nil {
+			return nil, pkg.ErrInvalidPubkey
+		}
+		pubkeys = append(pubkeys, pubkey)
+	}
+
+	accounts, err := rpcClient.GetMultipleAccounts(ctx, pubkeys...)
+	if err != nil {
+		return nil, err
+	}
+	if accounts == nil {
+		return nil, pkg.ErrAccountNotFound
+	}
+	var solanaAccounts []pkg.SolanaAccount
+	for i, account := range accounts.Value {
+		if account == nil {
+			continue
+		}
+		solanaAccounts = append(solanaAccounts, pkg.SolanaAccount{
+			Address:    addresses[i],
+			Lamports:   uint(account.Lamports),
+			Data:       account.Data.GetBinary(),
+			Owner:      account.Owner.String(),
+			Executable: account.Executable,
+			RentEpoch:  uint(account.RentEpoch.Uint64()),
+		})
+	}
+	return solanaAccounts, nil
+}

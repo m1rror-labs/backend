@@ -13,4 +13,5 @@ type SolanaAccount struct {
 
 type AccountRetriever interface {
 	GetAccount(ctx context.Context, address string) (SolanaAccount, error)
+	GetMultipleAccounts(ctx context.Context, addresses []string) ([]SolanaAccount, error)
 }

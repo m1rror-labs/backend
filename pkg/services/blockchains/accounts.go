@@ -12,16 +12,16 @@ func SetMainnetAccountState(
 	rpcEngine pkg.RpcEngine,
 	accountRetriever pkg.AccountRetriever,
 	blockchainID uuid.UUID,
-	account string,
+	accounts []string,
 	label *string,
 ) error {
 	// TODO: Billing stuff
-	accountData, err := accountRetriever.GetAccount(ctx, account)
+	accountsData, err := accountRetriever.GetMultipleAccounts(ctx, accounts)
 	if err != nil {
 		return err
 	}
 
-	if err := rpcEngine.SetAccount(ctx, blockchainID, accountData, label); err != nil {
+	if err := rpcEngine.SetAccounts(ctx, blockchainID, accountsData, label); err != nil {
 		return pkg.ErrSettingAccount
 	}
 	return nil
