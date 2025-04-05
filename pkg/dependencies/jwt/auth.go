@@ -131,7 +131,7 @@ func (a *DefaultAuth) Team(userRepo pkg.UserRepo) gin.HandlerFunc {
 			return
 		}
 
-		c.Set("team", user.Team)
+		c.Set("team", *user.Team)
 	}
 }
 
