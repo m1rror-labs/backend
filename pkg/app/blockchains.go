@@ -27,9 +27,12 @@ func (a *App) AttachBlockchainRoutes() {
 		blockchainhandlers.GetTransactionLogs(c, a.deps)
 	})
 
-	a.engine.POST("/blockchains/:id/accounts/mainnet", a.deps.Auth.User(), func(c *gin.Context) {
+	a.engine.POST("/blockchains/:id/accounts/mainnet", a.deps.Auth.Team(a.deps.Repo), func(c *gin.Context) {
 		blockchainhandlers.SetMainnetAccountState(c, a.deps)
 	})
+	// a.engine.POST("/blockchains/:id/accounts/mainnet/program-owned-accounts", a.deps.Auth.User(), func(c *gin.Context) {
+	// 	blockchainhandlers.SetProgramOwnedAccountState(c, a.deps)
+	// })
 
 	if a.env != "dev" {
 		go pkg.ProtectedFunc(func() {

@@ -26,3 +26,21 @@ func SetMainnetAccountState(
 	}
 	return nil
 }
+
+func SetProgramOwnedAccountState(
+	ctx context.Context,
+	rpcEngine pkg.RpcEngine,
+	accountRetriever pkg.AccountRetriever,
+	blockchainID uuid.UUID,
+	account string,
+) error {
+	accountsData, err := accountRetriever.GetProgramOwnedAccounts(ctx, account)
+	if err != nil {
+		return err
+	}
+
+	if err := rpcEngine.SetAccounts(ctx, blockchainID, accountsData, nil); err != nil {
+		return pkg.ErrSettingAccount
+	}
+	return nil
+}

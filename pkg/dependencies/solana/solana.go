@@ -2,6 +2,7 @@ package solana
 
 import (
 	"context"
+	"log"
 	"mirror-backend/pkg"
 
 	"github.com/gagliardetto/solana-go"
@@ -77,6 +78,37 @@ func (a *accountRetriever) GetMultipleAccounts(ctx context.Context, addresses []
 			Owner:      account.Owner.String(),
 			Executable: account.Executable,
 			RentEpoch:  uint(account.RentEpoch.Uint64()),
+		})
+	}
+	return solanaAccounts, nil
+}
+
+func (a *accountRetriever) GetProgramOwnedAccounts(ctx context.Context, programID string) ([]pkg.SolanaAccount, error) {
+	rpcClient := rpc.New(a.rpcUrl)
+
+	pubkey, err := solana.PublicKeyFromBase58(programID)
+	if err != nil {
+		return nil, pkg.ErrInvalidPubkey
+	}
+
+	accounts, err := rpcClient.GetProgramAccounts(ctx, pubkey)
+	if err != nil {
+		return nil, err
+	}
+
+	var solanaAccounts []pkg.SolanaAccount
+	for _, account := range accounts {
+		if account == nil {
+			continue
+		}
+		log.Println("Account:", account.Account.Data.GetBinary())
+		solanaAccounts = append(solanaAccounts, pkg.SolanaAccount{
+			Address:    account.Pubkey.String(),
+			Lamports:   uint(account.Account.Lamports),
+			Data:       account.Account.Data.GetBinary(),
+			Owner:      account.Account.Owner.String(),
+			Executable: account.Account.Executable,
+			RentEpoch:  uint(account.Account.RentEpoch.Uint64()),
 		})
 	}
 	return solanaAccounts, nil

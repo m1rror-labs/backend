@@ -41,6 +41,7 @@ type ApiKey struct {
 type Auth interface {
 	User() gin.HandlerFunc
 	ApiKey(userRepo UserRepo) gin.HandlerFunc
+	Team(userRepo UserRepo) gin.HandlerFunc
 }
 
 type UserRepo interface {

@@ -75,6 +75,66 @@ func (a *DefaultAuth) ApiKey(userRepo pkg.UserRepo) gin.HandlerFunc {
 	}
 }
 
+func (a *DefaultAuth) Team(userRepo pkg.UserRepo) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		apiKeyStr := c.GetHeader("api_key")
+		if apiKeyStr != "" {
+			apiKey, err := uuid.Parse(apiKeyStr)
+			if err != nil {
+				c.Status(http.StatusForbidden)
+				c.Abort()
+				return
+			}
+			key, err := userRepo.ReadApiKey().ID(apiKey).WithTeam().ExecuteOne(c)
+			if err != nil {
+				c.Status(http.StatusForbidden)
+				c.Abort()
+				return
+			}
+
+			c.Set("team", *key.Team)
+			return
+		}
+
+		bearerToken, err := getBearerToken(c)
+		if err != nil {
+			log.Println(err)
+			c.Status(http.StatusForbidden)
+			c.Abort()
+			return
+		}
+
+		claims := jwt.MapClaims{}
+		_, err = jwt.ParseWithClaims(bearerToken, &claims, func(t *jwt.Token) (interface{}, error) {
+			return a.key, nil
+		})
+		if err != nil {
+			log.Println("Error parsing claims", err)
+			c.Status(http.StatusForbidden)
+			c.Abort()
+			return
+		}
+
+		email, ok := claims["email"].(string)
+		if !ok {
+			log.Println("No email in claims", claims)
+			c.Status(http.StatusForbidden)
+			c.Abort()
+			return
+		}
+
+		user, err := userRepo.ReadUser().Email(email).WithTeam().ExecuteOne(c)
+		if err != nil {
+			log.Println("Error getting user", err)
+			c.Status(http.StatusForbidden)
+			c.Abort()
+			return
+		}
+
+		c.Set("team", user.Team)
+	}
+}
+
 func getBearerToken(c *gin.Context) (string, error) {
 	authHeader := c.Request.Header.Get("Authorization")
 	if authHeader == "" {
