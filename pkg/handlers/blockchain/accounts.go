@@ -16,8 +16,9 @@ func SetMainnetAccountState(c *gin.Context, deps pkg.Dependencies) {
 	}
 
 	type RequestBody struct {
-		Accounts []string `json:"accounts"`
-		Label    *string  `json:"label,omitempty"`
+		Accounts      []string `json:"accounts"`
+		Label         *string  `json:"label,omitempty"`
+		TokenMintAuth *string  `json:"token_mint_auth,omitempty"`
 	}
 	var requestBody RequestBody
 	if err := c.BindJSON(&requestBody); err != nil {
@@ -32,6 +33,7 @@ func SetMainnetAccountState(c *gin.Context, deps pkg.Dependencies) {
 		blockchainId,
 		requestBody.Accounts,
 		requestBody.Label,
+		requestBody.TokenMintAuth,
 	); err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return

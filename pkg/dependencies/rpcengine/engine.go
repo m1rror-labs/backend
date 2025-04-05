@@ -246,27 +246,35 @@ func (e *rpcEngine) LoadProgram(ctx context.Context, blockchainID uuid.UUID, pro
 }
 
 type setBlockchainRequest struct {
-	Address    string  `json:"address"`
-	Lamports   uint    `json:"lamports"`
-	Data       string  `json:"data"`
-	Owner      string  `json:"owner"`
-	RentEpoch  uint    `json:"rent_epoch"`
-	Label      *string `json:"label"`
-	Executable bool    `json:"executable"`
+	Address       string  `json:"address"`
+	Lamports      uint    `json:"lamports"`
+	Data          string  `json:"data"`
+	Owner         string  `json:"owner"`
+	RentEpoch     uint    `json:"rent_epoch"`
+	Executable    bool    `json:"executable"`
+	Label         *string `json:"label"`
+	TokenMintAuth *string `json:"token_mint_auth"`
 }
 
-func (e *rpcEngine) SetAccounts(ctx context.Context, blockchainID uuid.UUID, accounts []pkg.SolanaAccount, label *string) error {
+func (e *rpcEngine) SetAccounts(
+	ctx context.Context,
+	blockchainID uuid.UUID,
+	accounts []pkg.SolanaAccount,
+	label *string,
+	tokenMintAuth *string,
+) error {
 	var reqBody []setBlockchainRequest
 	for _, account := range accounts {
 		encodedData := base64.StdEncoding.EncodeToString([]byte(account.Data))
 		reqBody = append(reqBody, setBlockchainRequest{
-			Address:    account.Address,
-			Lamports:   account.Lamports,
-			Data:       encodedData,
-			Owner:      account.Owner,
-			RentEpoch:  account.RentEpoch,
-			Label:      label,
-			Executable: account.Executable,
+			Address:       account.Address,
+			Lamports:      account.Lamports,
+			Data:          encodedData,
+			Owner:         account.Owner,
+			RentEpoch:     account.RentEpoch,
+			Executable:    account.Executable,
+			Label:         label,
+			TokenMintAuth: tokenMintAuth,
 		})
 	}
 

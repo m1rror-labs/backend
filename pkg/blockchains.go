@@ -23,7 +23,7 @@ type RpcEngine interface {
 	DeleteBlockchain(ctx context.Context, apiKey uuid.UUID, id uuid.UUID) error
 	ExpireBlockchains(ctx context.Context) error
 
-	SetAccounts(ctx context.Context, blockchainID uuid.UUID, accounts []SolanaAccount, label *string) error
+	SetAccounts(ctx context.Context, blockchainID uuid.UUID, accounts []SolanaAccount, label *string, token_mint_auth *string) error
 	LoadProgram(ctx context.Context, blockchainID uuid.UUID, programID string, programBinary []byte) error
 }
 

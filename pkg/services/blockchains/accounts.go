@@ -14,6 +14,7 @@ func SetMainnetAccountState(
 	blockchainID uuid.UUID,
 	accounts []string,
 	label *string,
+	token_mint_auth *string,
 ) error {
 	// TODO: Billing stuff
 	accountsData, err := accountRetriever.GetMultipleAccounts(ctx, accounts)
@@ -21,7 +22,7 @@ func SetMainnetAccountState(
 		return err
 	}
 
-	if err := rpcEngine.SetAccounts(ctx, blockchainID, accountsData, label); err != nil {
+	if err := rpcEngine.SetAccounts(ctx, blockchainID, accountsData, label, token_mint_auth); err != nil {
 		return pkg.ErrSettingAccount
 	}
 	return nil
@@ -39,7 +40,7 @@ func SetProgramOwnedAccountState(
 		return err
 	}
 
-	if err := rpcEngine.SetAccounts(ctx, blockchainID, accountsData, nil); err != nil {
+	if err := rpcEngine.SetAccounts(ctx, blockchainID, accountsData, nil, nil); err != nil {
 		return pkg.ErrSettingAccount
 	}
 	return nil
