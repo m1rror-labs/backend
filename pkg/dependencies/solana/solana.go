@@ -2,7 +2,6 @@ package solana
 
 import (
 	"context"
-	"log"
 	"mirror-backend/pkg"
 
 	"github.com/gagliardetto/solana-go"
@@ -35,11 +34,15 @@ func (a *accountRetriever) GetAccount(ctx context.Context, address string) (pkg.
 	if account == nil {
 		return pkg.SolanaAccount{}, pkg.ErrAccountNotFound
 	}
+	data := account.Bytes()
+	if data == nil {
+		data = []byte{}
+	}
 
 	return pkg.SolanaAccount{
 		Address:    address,
 		Lamports:   uint(account.Value.Lamports),
-		Data:       account.Bytes(),
+		Data:       data,
 		Owner:      account.Value.Owner.String(),
 		Executable: account.Value.Executable,
 		RentEpoch:  uint(account.Value.RentEpoch.Uint64()),
@@ -71,10 +74,14 @@ func (a *accountRetriever) GetMultipleAccounts(ctx context.Context, addresses []
 		if account == nil {
 			continue
 		}
+		data := account.Data.GetBinary()
+		if data == nil {
+			data = []byte{}
+		}
 		solanaAccounts = append(solanaAccounts, pkg.SolanaAccount{
 			Address:    addresses[i],
 			Lamports:   uint(account.Lamports),
-			Data:       account.Data.GetBinary(),
+			Data:       data,
 			Owner:      account.Owner.String(),
 			Executable: account.Executable,
 			RentEpoch:  uint(account.RentEpoch.Uint64()),
@@ -101,7 +108,6 @@ func (a *accountRetriever) GetProgramOwnedAccounts(ctx context.Context, programI
 		if account == nil {
 			continue
 		}
-		log.Println("Account:", account.Account.Data.GetBinary())
 		solanaAccounts = append(solanaAccounts, pkg.SolanaAccount{
 			Address:    account.Pubkey.String(),
 			Lamports:   uint(account.Account.Lamports),
@@ -112,4 +118,60 @@ func (a *accountRetriever) GetProgramOwnedAccounts(ctx context.Context, programI
 		})
 	}
 	return solanaAccounts, nil
+}
+
+func (a *accountRetriever) GetSignaturesForAddress(ctx context.Context, address string, limit int) ([]string, error) {
+	rpcClient := rpc.New(a.rpcUrl)
+
+	pubkey, err := solana.PublicKeyFromBase58(address)
+	if err != nil {
+		return nil, pkg.ErrInvalidPubkey
+	}
+
+	signatures, err := rpcClient.GetSignaturesForAddressWithOpts(ctx, pubkey, &rpc.GetSignaturesForAddressOpts{
+		Limit: &limit,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	var signatureList []string
+	for _, sig := range signatures {
+		signatureList = append(signatureList, sig.Signature.String())
+	}
+
+	return signatureList, nil
+}
+
+func (a *accountRetriever) GetTransactionAccountKeys(ctx context.Context, signature string) ([]string, error) {
+	rpcClient := rpc.New(a.rpcUrl)
+
+	sig, err := solana.SignatureFromBase58(signature)
+	if err != nil {
+		return nil, pkg.ErrInvalidSignature
+	}
+
+	maxVersion := uint64(1)
+	res, err := rpcClient.GetTransaction(ctx, sig, &rpc.GetTransactionOpts{
+		MaxSupportedTransactionVersion: &maxVersion,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	tx, err := res.Transaction.GetTransaction()
+	if err != nil {
+		return nil, err
+	}
+
+	if tx == nil {
+		return nil, pkg.ErrTransactionNotFound
+	}
+
+	var accountKeys []string
+	for _, key := range tx.Message.AccountKeys {
+		accountKeys = append(accountKeys, key.String())
+	}
+
+	return accountKeys, nil
 }

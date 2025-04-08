@@ -3,6 +3,7 @@ package blockchains
 import (
 	"context"
 	"mirror-backend/pkg"
+	"slices"
 
 	"github.com/google/uuid"
 )
@@ -28,16 +29,57 @@ func SetMainnetAccountState(
 	return nil
 }
 
-func SetProgramOwnedAccountState(
+func SetAccountStateFromRecentTransactions(
 	ctx context.Context,
 	rpcEngine pkg.RpcEngine,
 	accountRetriever pkg.AccountRetriever,
 	blockchainID uuid.UUID,
 	account string,
 ) error {
-	accountsData, err := accountRetriever.GetProgramOwnedAccounts(ctx, account)
+	signatures, err := accountRetriever.GetSignaturesForAddress(ctx, account, 25)
 	if err != nil {
 		return err
+	}
+
+	var accounts []string
+	for _, signature := range signatures {
+		aa, err := accountRetriever.GetTransactionAccountKeys(ctx, signature)
+		if err != nil {
+			return err
+		}
+		for _, account := range aa {
+			if !slices.Contains(accounts, account) {
+				accounts = append(accounts, account)
+			}
+		}
+	}
+
+	var accountsData []pkg.SolanaAccount
+	var secondOrderAccounts []string
+	// get accounts every 100 because solana has a limit of 100 accounts per request
+	for i := 0; i < len(accounts); i += 99 {
+		end := min(i+99, len(accounts))
+		accountsDataBatch, err := accountRetriever.GetMultipleAccounts(ctx, accounts[i:end])
+		if err != nil {
+			return err
+		}
+		accountsData = append(accountsData, accountsDataBatch...)
+		for _, account := range accountsDataBatch {
+			if !slices.Contains(accounts, account.Owner) && !slices.Contains(secondOrderAccounts, account.Owner) {
+				secondOrderAccounts = append(secondOrderAccounts, account.Owner)
+			}
+		}
+	}
+	for i := 0; i < len(secondOrderAccounts); i += 99 {
+		end := min(i+99, len(secondOrderAccounts))
+		accountsDataBatch, err := accountRetriever.GetMultipleAccounts(ctx, secondOrderAccounts[i:end])
+		if err != nil {
+			return err
+		}
+		accountsData = append(accountsData, accountsDataBatch...)
+	}
+	if len(accountsData) == 0 {
+		return pkg.ErrNoAccounts
 	}
 
 	if err := rpcEngine.SetAccounts(ctx, blockchainID, accountsData, nil, nil); err != nil {

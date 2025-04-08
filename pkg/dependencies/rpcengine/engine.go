@@ -283,6 +283,7 @@ func (e *rpcEngine) SetAccounts(
 		log.Println("error marshalling request", err)
 		return pkg.ErrHttpRequest
 	}
+	log.Println("request body", string(reqBytes))
 
 	r, err := http.NewRequest(http.MethodPut, fmt.Sprintf("%s/accounts/%s", e.url, blockchainID.String()), bytes.NewReader(reqBytes))
 	if err != nil {

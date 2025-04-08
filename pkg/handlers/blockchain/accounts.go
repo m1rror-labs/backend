@@ -46,7 +46,7 @@ func SetMainnetAccountState(c *gin.Context, deps pkg.Dependencies) {
 	c.JSON(200, gin.H{"message": "Mainnet account state updated successfully"})
 }
 
-func SetProgramOwnedAccountState(c *gin.Context, deps pkg.Dependencies) {
+func SetAccountStateFromRecentTransactions(c *gin.Context, deps pkg.Dependencies) {
 	blockchainId, err := uuid.Parse(c.Param("id"))
 	if err != nil {
 		c.JSON(400, gin.H{"error": "Invalid blockchain ID"})
@@ -62,7 +62,7 @@ func SetProgramOwnedAccountState(c *gin.Context, deps pkg.Dependencies) {
 		return
 	}
 
-	if err := blockchains.SetProgramOwnedAccountState(
+	if err := blockchains.SetAccountStateFromRecentTransactions(
 		c,
 		deps.RpcEngine,
 		deps.AccountRetriever,

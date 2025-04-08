@@ -117,9 +117,12 @@ const (
 	ErrNoApiKey       = Err("No api key")
 	ErrNotFound       = Err("Not found")
 
-	ErrInvalidPubkey   = Err("Invalid pubkey")
-	ErrAccountNotFound = Err("Account not found")
-	ErrSettingAccount  = Err("Error setting account")
+	ErrInvalidPubkey       = Err("Invalid pubkey")
+	ErrInvalidSignature    = Err("Invalid signature")
+	ErrAccountNotFound     = Err("Account not found")
+	ErrSettingAccount      = Err("Error setting account")
+	ErrTransactionNotFound = Err("Transaction not found")
+	ErrNoAccounts          = Err("No accounts")
 )
 
 func ProtectedFunc(f func()) {

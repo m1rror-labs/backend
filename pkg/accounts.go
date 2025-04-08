@@ -57,6 +57,9 @@ type AccountRetriever interface {
 	GetAccount(ctx context.Context, address string) (SolanaAccount, error)
 	GetMultipleAccounts(ctx context.Context, addresses []string) ([]SolanaAccount, error)
 	GetProgramOwnedAccounts(ctx context.Context, programID string) ([]SolanaAccount, error)
+
+	GetSignaturesForAddress(ctx context.Context, address string, limit int) ([]string, error)
+	GetTransactionAccountKeys(ctx context.Context, signature string) ([]string, error)
 }
 
 type AccountRepo interface {

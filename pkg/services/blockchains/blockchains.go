@@ -100,9 +100,5 @@ func UserCanAccessBlockchain(
 	blockainRepo pkg.BlockchainRepo,
 ) bool {
 	_, err := blockainRepo.ReadBlockchain().ID(blockchainID).TeamID(user.TeamID).Execute(context.Background())
-	if err != nil {
-		return false
-	}
-
-	return true
+	return err == nil
 }
