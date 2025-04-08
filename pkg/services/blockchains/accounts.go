@@ -45,3 +45,13 @@ func SetProgramOwnedAccountState(
 	}
 	return nil
 }
+
+func GetAccounts(
+	ctx context.Context,
+	accountRepo pkg.AccountRepo,
+	blockchainID uuid.UUID,
+	page,
+	limit int,
+) ([]pkg.Account, int, error) {
+	return accountRepo.ReadAccounts().BlockchainID(blockchainID).Paginate(page, limit).OrderCreatedAt("DESC").ExecuteWithCount(ctx)
+}

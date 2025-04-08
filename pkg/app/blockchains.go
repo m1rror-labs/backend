@@ -27,6 +27,9 @@ func (a *App) AttachBlockchainRoutes() {
 		blockchainhandlers.GetTransactionLogs(c, a.deps)
 	})
 
+	a.engine.GET("/blockchains/:id/accounts", a.deps.Auth.User(), func(c *gin.Context) {
+		blockchainhandlers.GetAccounts(c, a.deps)
+	})
 	a.engine.POST("/blockchains/:id/accounts/mainnet", a.deps.Auth.Team(a.deps.Repo), func(c *gin.Context) {
 		blockchainhandlers.SetMainnetAccountState(c, a.deps)
 	})

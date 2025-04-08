@@ -93,3 +93,16 @@ func ExpireBlockchains(ctx context.Context, rpcEngine pkg.RpcEngine) error {
 	scheduler.Start()
 	return nil
 }
+
+func UserCanAccessBlockchain(
+	user pkg.User,
+	blockchainID uuid.UUID,
+	blockainRepo pkg.BlockchainRepo,
+) bool {
+	_, err := blockainRepo.ReadBlockchain().ID(blockchainID).TeamID(user.TeamID).Execute(context.Background())
+	if err != nil {
+		return false
+	}
+
+	return true
+}
