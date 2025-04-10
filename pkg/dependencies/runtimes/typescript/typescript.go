@@ -25,17 +25,17 @@ func (r *runtime) ExecuteCode(code string) (string, error) {
 	defer r.mu.Release()
 	<-awaiting
 
-	// polyfill := `if (typeof CustomEvent !== 'function') {
-	// 	class CustomEvent extends Event {
-	// 		constructor(event: string, params: { detail?: any; bubbles?: boolean; cancelable?: boolean } = {}) {
-	// 			super(event, params);
-	// 			this.detail = params.detail || null;
-	// 		}
-	// 		detail: any;
-	// 	}
-	// 	(global as any).CustomEvent = CustomEvent;
-	// }`
-	// code = polyfill + code
+	polyfill := `if (typeof CustomEvent !== 'function') {
+		class CustomEvent extends Event {
+			constructor(event: string, params: { detail?: any; bubbles?: boolean; cancelable?: boolean } = {}) {
+				super(event, params);
+				this.detail = params.detail || null;
+			}
+			detail: any;
+		}
+		(global as any).CustomEvent = CustomEvent;
+	}`
+	code = polyfill + code
 
 	now := time.Now()
 	id := uuid.NewString()
