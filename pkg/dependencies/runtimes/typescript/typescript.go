@@ -50,6 +50,7 @@ func (r *runtime) ExecuteCode(code string) (string, error) {
 	shortMjsFilename := "./dist/" + id + ".ts"
 	cmd := exec.Command("npx", "esrun", shortMjsFilename)
 	cmd.Dir = "./pkg/dependencies/runtimes/typescript"
+	cmd.Env = append(os.Environ(), "NODE_OPTIONS=--no-warnings")
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Println("Error running JavaScript:", err)
