@@ -25,54 +25,30 @@ func (r *runtime) ExecuteCode(code string) (string, error) {
 	defer r.mu.Release()
 	<-awaiting
 
-	polyfill := `if (typeof CustomEvent !== 'function') {
-		class CustomEvent extends Event {
-			constructor(event: string, params: { detail?: any; bubbles?: boolean; cancelable?: boolean } = {}) {
-				super(event, params);
-				this.detail = params.detail || null;
-			}
-			detail: any;
-		}
-		(global as any).CustomEvent = CustomEvent;
-	}`
-	code = polyfill + code
+	// polyfill := `if (typeof CustomEvent !== 'function') {
+	// 	class CustomEvent extends Event {
+	// 		constructor(event: string, params: { detail?: any; bubbles?: boolean; cancelable?: boolean } = {}) {
+	// 			super(event, params);
+	// 			this.detail = params.detail || null;
+	// 		}
+	// 		detail: any;
+	// 	}
+	// 	(global as any).CustomEvent = CustomEvent;
+	// }`
+	// code = polyfill + code
 
 	now := time.Now()
 	id := uuid.NewString()
-	filename := "./" + id + ".ts"
-	fullFilename := "./pkg/dependencies/runtimes/typescript/" + id + ".ts"
+	fullFilename := "./pkg/dependencies/runtimes/typescript/dist/" + id + ".ts"
 	err := os.WriteFile(fullFilename, []byte(code), 0644)
 	if err != nil {
 		log.Println("Error writing TypeScript file:", err)
 		return "", err
 	}
 	defer os.Remove(fullFilename)
-	defer os.Remove(filename)
-	defer os.Remove("./pkg/dependencies/runtimes/typescript/dist/" + id + ".js")
-	defer os.Remove("./pkg/dependencies/runtimes/typescript/dist/" + id + ".mjs")
 
-	// Compile the TypeScript file to JavaScript
-	cmd := exec.Command("npx", "tsc", "-t", "es2022", "-m", "es2022", "--skipLibCheck", "--isolatedModules", "--moduleResolution", "node", "--outDir", "dist", "--allowSyntheticDefaultImports", filename)
-	cmd.Dir = "./pkg/dependencies/runtimes/typescript"
-	if output, err := cmd.CombinedOutput(); err != nil {
-		fmt.Println("Error compiling TypeScript:", string(output)) // Print the error logs
-		return "", fmt.Errorf("error compiling TypeScript: %s", string(output))
-	}
-	log.Println("time taken to compile TypeScript:", time.Since(now)) // Log the time taken to compile
-	now = time.Now()                                                  // Reset the timer after compilation
-
-	jsFilename := "./pkg/dependencies/runtimes/typescript/dist/" + id + ".js"
-	mjsFilename := "./pkg/dependencies/runtimes/typescript/dist/" + id + ".mjs"
-	err = os.Rename(jsFilename, mjsFilename)
-	if err != nil {
-		log.Println("Error renaming JavaScript file:", err)
-		return "", fmt.Errorf("error renaming file: %s", err)
-	}
-	defer os.Remove(mjsFilename)
-
-	// Run the resulting JavaScript file
-	shortMjsFilename := "./dist/" + id + ".mjs"
-	cmd = exec.Command("node", "--no-warnings", "--experimental-global-webcrypto", shortMjsFilename)
+	shortMjsFilename := "./dist/" + id + ".ts"
+	cmd := exec.Command("npx", "esrun", shortMjsFilename)
 	cmd.Dir = "./pkg/dependencies/runtimes/typescript"
 	output, err := cmd.CombinedOutput()
 	if err != nil {
