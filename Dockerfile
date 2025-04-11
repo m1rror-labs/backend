@@ -22,7 +22,8 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     libc6 \
     ghdl \
-    openssl
+    openssl \
+    clang-15
 
 
 # Install TypeScript globally
