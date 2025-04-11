@@ -38,6 +38,7 @@ func (r *runtime) ExecuteCode(code string) (string, error) {
 
 	cmd := exec.Command("cargo", "run", "--locked", "--bin", id)
 	cmd.Dir = "./pkg/dependencies/runtimes/rust"
+	cmd.Env = append(os.Environ(), "CARGO_TARGET_DIR=./pkg/dependencies/runtimes/rust/target")
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Println(err)

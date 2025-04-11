@@ -1,6 +1,9 @@
 [workspace]
 members = []
 
+[build]
+incremental = true
+
 [package]
 name = "rust"
 version = "0.1.0"
