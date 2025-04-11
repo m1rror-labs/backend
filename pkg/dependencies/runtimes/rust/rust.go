@@ -33,6 +33,8 @@ func (r *runtime) ExecuteCode(code string) (string, error) {
 		return "", err
 	}
 	defer os.Remove(fullFilename)
+	defer os.Remove("./pkg/dependencies/runtimes/rust/target/debug/" + id)
+	defer os.Remove("./pkg/dependencies/runtimes/rust/target/debug/" + id + ".d")
 
 	cmd := exec.Command("cargo", "run", "--locked", "--bin", id)
 	cmd.Dir = "./pkg/dependencies/runtimes/rust"
