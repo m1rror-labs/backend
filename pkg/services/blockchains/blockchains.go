@@ -35,18 +35,18 @@ func CreateBlockchainSession(
 	userID string,
 	apiKey pkg.ApiKey,
 ) (uuid.UUID, error) {
-	// existingBlockchains, err := blockchainRepo.ReadBlockchain().TeamID(apiKey.TeamID).Label(&userID).Execute(ctx)
-	// if err != nil {
-	// 	return uuid.Nil, err
-	// }
-	// if len(existingBlockchains) > 0 {
-	// 	existingBlockchain := existingBlockchains[0]
-	// 	if existingBlockchain.Expiry != nil && existingBlockchain.Expiry.Before(time.Now()) {
-	// 		go rpcEngine.DeleteBlockchain(ctx, apiKey.ID, existingBlockchain.ID)
-	// 	} else {
-	// 		return existingBlockchain.ID, nil
-	// 	}
-	// }
+	existingBlockchains, err := blockchainRepo.ReadBlockchain().TeamID(apiKey.TeamID).Label(&userID).Execute(ctx)
+	if err != nil {
+		return uuid.Nil, err
+	}
+	if len(existingBlockchains) > 0 {
+		existingBlockchain := existingBlockchains[0]
+		if existingBlockchain.Expiry != nil && existingBlockchain.Expiry.Before(time.Now()) {
+			go rpcEngine.DeleteBlockchain(ctx, apiKey.ID, existingBlockchain.ID)
+		} else {
+			return existingBlockchain.ID, nil
+		}
+	}
 
 	config := uuid.MustParse("3cdb3f0e-5f8a-4000-a31a-c6821f92c2cc")
 
