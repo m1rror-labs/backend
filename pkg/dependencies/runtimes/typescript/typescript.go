@@ -13,17 +13,17 @@ import (
 )
 
 type runtime struct {
-	mu *multisync.Mutex
+	// mu *multisync.Mutex
 }
 
 func NewRuntime(mu *multisync.Mutex) pkg.CodeExecutor {
-	return &runtime{mu}
+	return &runtime{}
 }
 
 func (r *runtime) ExecuteCode(code string) (string, error) {
-	awaiting := r.mu.Acquire()
-	defer r.mu.Release()
-	<-awaiting
+	// awaiting := r.mu.Acquire()
+	// defer r.mu.Release()
+	// <-awaiting
 
 	polyfill := `if (typeof CustomEvent !== 'function') {
 		class CustomEvent extends Event {
