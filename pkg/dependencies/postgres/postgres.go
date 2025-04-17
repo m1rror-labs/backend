@@ -33,10 +33,10 @@ func InitRepository(url string) repository {
 
 func NewRepository(url string) pkg.Repository {
 	sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(url)))
-	maxOpenConns := 30
-	sqldb.SetMaxOpenConns(maxOpenConns)   // max connections set in supabase
-	sqldb.SetMaxIdleConns(10)             // 30 percent of max connections
-	sqldb.SetConnMaxLifetime(time.Minute) // refresh stale connections
+	maxOpenConns := 100
+	sqldb.SetMaxOpenConns(maxOpenConns)        // max connections set in supabase
+	sqldb.SetMaxIdleConns(30)                  // 30 percent of max connections
+	sqldb.SetConnMaxLifetime(15 * time.Minute) // refresh stale connections
 	client := bun.NewDB(sqldb, pgdialect.New(), bun.WithDiscardUnknownColumns())
 	client.AddQueryHook(&QueryHook{})
 
