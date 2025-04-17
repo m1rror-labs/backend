@@ -7,10 +7,10 @@ import (
 )
 
 func (a *App) AttachCodeExecRoutes() {
-	a.engine.POST("/code-exec/typescript", func(c *gin.Context) {
+	a.engine.POST("/code-exec/typescript", a.deps.Auth.CodeExec(), func(c *gin.Context) {
 		codeexechandlers.ExecuteTypescript(c, a.deps)
 	})
-	a.engine.POST("/code-exec/rust", func(c *gin.Context) {
+	a.engine.POST("/code-exec/rust", a.deps.Auth.CodeExec(), func(c *gin.Context) {
 		codeexechandlers.ExecuteRust(c, a.deps)
 	})
 

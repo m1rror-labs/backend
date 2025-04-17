@@ -5,6 +5,7 @@ import (
 	"log"
 	"mirror-backend/pkg"
 	"net/http"
+	"slices"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -13,12 +14,14 @@ import (
 )
 
 type DefaultAuth struct {
-	key []byte
+	key              []byte
+	approvedCodeExec []string
 }
 
-func NewAuthMiddleware(key string) pkg.Auth {
+func NewAuthMiddleware(key string, approvedCodeExec []string) pkg.Auth {
 	return &DefaultAuth{
-		key: []byte(key),
+		key:              []byte(key),
+		approvedCodeExec: approvedCodeExec,
 	}
 }
 
@@ -149,4 +152,15 @@ func getBearerToken(c *gin.Context) (string, error) {
 		return "", errors.New("doesn't include Bearer")
 	}
 	return authStrs[1], nil
+}
+
+func (a *DefaultAuth) CodeExec() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		apiKeyStr := c.GetHeader("api_key")
+		if !slices.Contains(a.approvedCodeExec, apiKeyStr) {
+			c.Status(http.StatusForbidden)
+			c.Abort()
+			return
+		}
+	}
 }

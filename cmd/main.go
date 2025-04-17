@@ -7,6 +7,7 @@ import (
 	"mirror-backend/pkg/dependencies/rpcengine"
 	"mirror-backend/pkg/dependencies/solana"
 	"os"
+	"strings"
 
 	"github.com/joho/godotenv"
 )
@@ -14,7 +15,9 @@ import (
 func main() {
 	godotenv.Load()
 
-	auth := jwt.NewAuthMiddleware(os.Getenv("SUPABASE_JWT_SECRET"))
+	approvedCodeExecRaw := os.Getenv("APPROVED_CODE_EXEC")
+	approvedCodeExec := strings.Split(approvedCodeExecRaw, ",")
+	auth := jwt.NewAuthMiddleware(os.Getenv("SUPABASE_JWT_SECRET"), approvedCodeExec)
 	repo := postgres.NewRepository(os.Getenv("DATABASE_URL"))
 	rpcEngine := rpcengine.New(os.Getenv("ENGINE_URL"))
 	accountRetriever := solana.NewAccountRetriever(os.Getenv("SOLANA_RPC_URL"))

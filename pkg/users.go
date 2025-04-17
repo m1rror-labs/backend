@@ -42,6 +42,7 @@ type Auth interface {
 	User() gin.HandlerFunc
 	ApiKey(userRepo UserRepo) gin.HandlerFunc
 	Team(userRepo UserRepo) gin.HandlerFunc
+	CodeExec() gin.HandlerFunc
 }
 
 type UserRepo interface {
