@@ -17,4 +17,8 @@ func (a *App) AttachCodeExecRoutes() {
 	a.engine.POST("/code-exec/programs/anchor", func(c *gin.Context) {
 		codeexechandlers.BuildAndDeployAnchor(c, a.deps)
 	})
+
+	// a.engine.POST("/code-exec/load-test", func(c *gin.Context) {
+	// 	codeexechandlers.LoadTest(c, a.deps)
+	// })
 }
