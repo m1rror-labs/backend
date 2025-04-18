@@ -5,10 +5,6 @@ import (
 	"errors"
 	"log"
 	"mirror-backend/pkg"
-	"mirror-backend/pkg/dependencies/multisync"
-	"mirror-backend/pkg/dependencies/runtimes/anchor"
-	"mirror-backend/pkg/dependencies/runtimes/rust"
-	"mirror-backend/pkg/dependencies/runtimes/typescript"
 	"net/http"
 	"os"
 	"os/signal"
@@ -38,6 +34,8 @@ func NewApp(
 	repo pkg.Repository,
 	rpcEngine pkg.RpcEngine,
 	accountRetriever pkg.AccountRetriever,
+	tsRuntime pkg.CodeExecutor,
+	rustRuntime pkg.CodeExecutor,
 ) *App {
 	engine := gin.New()
 	engine.Use(
@@ -55,7 +53,6 @@ func NewApp(
 		MaxAge:           12 * time.Hour,
 	}
 	engine.Use(cors.New(config))
-	runtimesMu := multisync.NewMutex(10)
 
 	return &App{
 		env:    env,
@@ -64,9 +61,8 @@ func NewApp(
 			Auth:             auth,
 			Repo:             repo,
 			RpcEngine:        rpcEngine,
-			TsRuntime:        typescript.NewRuntime(runtimesMu),
-			RustRuntime:      rust.NewRuntime(runtimesMu),
-			AnchorRuntime:    anchor.NewRuntime(runtimesMu),
+			TsRuntime:        tsRuntime,
+			RustRuntime:      rustRuntime,
 			AccountRetriever: accountRetriever,
 		},
 	}

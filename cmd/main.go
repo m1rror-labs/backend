@@ -5,6 +5,7 @@ import (
 	"mirror-backend/pkg/dependencies/jwt"
 	"mirror-backend/pkg/dependencies/postgres"
 	"mirror-backend/pkg/dependencies/rpcengine"
+	"mirror-backend/pkg/dependencies/runtimes"
 	"mirror-backend/pkg/dependencies/solana"
 	"os"
 	"strings"
@@ -22,9 +23,20 @@ func main() {
 	rpcEngine := rpcengine.New(os.Getenv("ENGINE_URL"))
 	accountRetriever := solana.NewAccountRetriever(os.Getenv("SOLANA_RPC_URL"))
 
+	tsRuntime := runtimes.NewTypescript(os.Getenv("CODE_EXEC_URL"))
+	rustRuntime := runtimes.NewRust(os.Getenv("CODE_EXEC_URL"))
+
 	env := os.Getenv("ENV")
 
-	app := app.NewApp(env, auth, repo, rpcEngine, accountRetriever)
+	app := app.NewApp(
+		env,
+		auth,
+		repo,
+		rpcEngine,
+		accountRetriever,
+		tsRuntime,
+		rustRuntime,
+	)
 
 	app.Run()
 }

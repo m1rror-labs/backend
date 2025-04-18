@@ -95,16 +95,6 @@ type ApiKeyReader interface {
 	WithTeam() ApiKeyReader
 }
 
-type Dependencies struct {
-	Auth             Auth
-	Repo             Repository
-	RpcEngine        RpcEngine
-	TsRuntime        CodeExecutor
-	RustRuntime      CodeExecutor
-	AnchorRuntime    ProgramBuilder
-	AccountRetriever AccountRetriever
-}
-
 type Err string
 
 func (e Err) Error() string {
