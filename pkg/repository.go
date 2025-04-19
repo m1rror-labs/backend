@@ -6,6 +6,7 @@ type Dependencies struct {
 	RpcEngine        RpcEngine
 	TsRuntime        CodeExecutor
 	RustRuntime      CodeExecutor
+	AnchorRuntime    ProgramBuilder
 	AccountRetriever AccountRetriever
 }
 

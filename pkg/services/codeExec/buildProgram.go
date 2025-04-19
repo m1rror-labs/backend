@@ -2,7 +2,6 @@ package codeexec
 
 import (
 	"context"
-	"log"
 	"mirror-backend/pkg"
 
 	"github.com/google/uuid"
@@ -22,13 +21,5 @@ func BuildAndLoadProgram(
 	programBuilder pkg.ProgramBuilder,
 	rpcEngine pkg.RpcEngine,
 ) error {
-	programBinary, err := programBuilder.BuildProgram(code)
-	if err != nil {
-		return err
-	}
-	if err := rpcEngine.LoadProgram(ctx, blockchainID, programID, programBinary); err != nil {
-		log.Println("error loading program", err)
-		return err
-	}
-	return nil
+	return programBuilder.BuildAndDeployProgram(code, programID, blockchainID)
 }
