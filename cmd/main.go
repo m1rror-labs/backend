@@ -25,6 +25,7 @@ func main() {
 
 	tsRuntime := runtimes.NewTypescript(os.Getenv("CODE_EXEC_URL"))
 	rustRuntime := runtimes.NewRust(os.Getenv("CODE_EXEC_URL"))
+	anchorRuntime := runtimes.NewAnchor(os.Getenv("CODE_EXEC_URL"))
 
 	env := os.Getenv("ENV")
 
@@ -36,6 +37,7 @@ func main() {
 		accountRetriever,
 		tsRuntime,
 		rustRuntime,
+		anchorRuntime,
 	)
 
 	app.Run()

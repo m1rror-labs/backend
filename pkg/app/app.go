@@ -36,6 +36,7 @@ func NewApp(
 	accountRetriever pkg.AccountRetriever,
 	tsRuntime pkg.CodeExecutor,
 	rustRuntime pkg.CodeExecutor,
+	anchorRuntime pkg.ProgramBuilder,
 ) *App {
 	engine := gin.New()
 	engine.Use(
@@ -63,6 +64,7 @@ func NewApp(
 			RpcEngine:        rpcEngine,
 			TsRuntime:        tsRuntime,
 			RustRuntime:      rustRuntime,
+			AnchorRuntime:    anchorRuntime,
 			AccountRetriever: accountRetriever,
 		},
 	}
