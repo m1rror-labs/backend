@@ -8,4 +8,5 @@ type CodeExecutor interface {
 
 type ProgramBuilder interface {
 	BuildAndDeployProgram(code string, programID string, blockchainID uuid.UUID) error
+	BuildAndTestProgram(code string, programID string, blockchainID uuid.UUID, testCode string) (string, error)
 }

@@ -60,3 +60,43 @@ func (a *AnchorRuntime) BuildAndDeployProgram(code string, programID string, blo
 	}
 	return nil
 }
+
+func (a *AnchorRuntime) BuildAndTestProgram(code string, programID string, blockchainID uuid.UUID, testCode string) (string, error) {
+	reqBody := testRequest{Code: code, ProgramID: programID, BlockchainID: blockchainID, TestCode: testCode}
+	reqBytes, err := json.Marshal(reqBody)
+	if err != nil {
+		log.Println("error marshalling request", err)
+		return "", pkg.ErrHttpRequest
+	}
+
+	r, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/code-exec/programs/anchor/test", a.url), bytes.NewReader(reqBytes))
+	if err != nil {
+		log.Println("error creating request", err)
+		return "", pkg.ErrHttpRequest
+	}
+
+	client := &http.Client{}
+	resp, err := client.Do(r)
+	if err != nil {
+		log.Println("error sending request", err)
+		return "", pkg.ErrHttpRequest
+	}
+
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Println("error reading response body", err)
+		return "", pkg.ErrHttpRequest
+	}
+
+	var res testResponse
+	if err := json.Unmarshal(body, &res); err != nil {
+		log.Println("error unmarshalling response", err, string(body))
+		return "", pkg.ErrHttpRequest
+	}
+
+	if res.Error != "" {
+		return "", errors.New(res.Error)
+	}
+	return res.Result, nil
+}
