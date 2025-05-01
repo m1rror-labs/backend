@@ -39,7 +39,7 @@ func BuildAndTestAnchor(c *gin.Context, deps pkg.Dependencies) {
 		return
 	}
 
-	result, err := codeexec.BuildAndTestProgram(
+	output, err := codeexec.BuildAndTestProgram(
 		c,
 		request.Code,
 		request.ProgramID,
@@ -54,5 +54,5 @@ func BuildAndTestAnchor(c *gin.Context, deps pkg.Dependencies) {
 		return
 	}
 
-	c.JSON(200, gin.H{"message": "Program built and loaded successfully", "result": result})
+	c.JSON(200, gin.H{"message": "Program built and tested successfully", "output": output})
 }

@@ -98,5 +98,5 @@ func (a *AnchorRuntime) BuildAndTestProgram(code string, programID string, block
 	if res.Error != "" {
 		return "", errors.New(res.Error)
 	}
-	return res.Result, nil
+	return res.Output, nil
 }

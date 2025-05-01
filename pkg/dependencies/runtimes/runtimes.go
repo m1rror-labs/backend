@@ -30,5 +30,5 @@ type testRequest struct {
 
 type testResponse struct {
 	Error  string `json:"error"`
-	Result string `json:"result"`
+	Output string `json:"output"`
 }
